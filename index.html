@@ -9,6 +9,9 @@
   <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
+  <!-- PDF.js CDN for Client-Side Binary PDF Text Extraction -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  
   <!-- Custom Dual-Theme Stylesheet -->
   <style>
 /* DENTISTOIRE - Luxury Dual-Theme CSS Architecture */
@@ -102,6 +105,14 @@ body::before {
   background: var(--aurora-gradient);
   pointer-events: none;
   z-index: 0;
+}
+
+/* PDF Drop Zone Drag & Drop Styles */
+#pdf-drop-zone.drag-active {
+  border-color: var(--primary) !important;
+  background: var(--primary-glow) !important;
+  transform: scale(1.02);
+  box-shadow: 0 0 25px var(--primary-glow);
 }
 
 /* Floating Glass Navigation Bar */
@@ -948,9 +959,17 @@ html[dir="rtl"] .quiz-question-title {
             <i class="fa-solid fa-bolt" style="color: #f59e0b;"></i>
             <span id="nav-xp-val">0 XP</span>
           </div>
+          
+          <!-- Student Login & Session Badge -->
           <button class="btn-luxury" id="btn-auth-trigger" style="padding: 0.35rem 0.85rem; font-size: 0.8rem;" onclick="window.DentistoireApp.openAuthModal()">
-            <i class="fa-solid fa-right-to-bracket"></i> <span id="auth-nav-label">Sign In</span>
+            <i class="fa-solid fa-right-to-bracket"></i> <span id="auth-nav-label">Sign In / Log In</span>
           </button>
+
+          <div id="user-session-badge" style="display: none; align-items: center; gap: 0.5rem; background: var(--bg-secondary); padding: 0.25rem 0.65rem; border-radius: var(--radius-full); border: 1px solid var(--card-border);">
+            <span style="font-size: 0.8rem; font-weight: 700; color: var(--primary);" id="nav-user-display-name">👤 Student</span>
+            <button class="icon-circle-btn" style="width: 26px; height: 26px; font-size: 0.7rem; color: #ef4444;" title="Log Out" onclick="window.DentistoireApp.performLogout()"><i class="fa-solid fa-right-from-bracket"></i></button>
+          </div>
+
           <button class="icon-circle-btn" id="btn-theme-toggle" title="Toggle Theme (Dream Blush / Noir Titanium)" onclick="window.DentistoireApp.toggleTheme()">
             <i class="fa-solid fa-wand-magic-sparkles" id="theme-btn-icon"></i>
           </button>
@@ -983,9 +1002,9 @@ html[dir="rtl"] .quiz-question-title {
 
           <h2 class="hero-title">Learn. Understand. Smile.</h2>
           <p class="hero-subtitle">A soft and inspiring space to learn, take care, and make every smile shine.</p>
-          
+
           <!-- Functional Real-Time Search Bar with Dropdown Results -->
-          <div class="search-container-relative" style="position: relative; max-width: 550px;">
+          <div class="search-container-relative" style="position: relative; max-width: 550px; margin-top: 1rem;">
             <div class="luxury-search-bar">
               <i class="fa-solid fa-magnifying-glass" style="color: var(--primary);"></i>
               <input type="text" id="home-search-input" placeholder="Search dental subjects (e.g., Oral Histology) or sheets...">
@@ -1101,14 +1120,12 @@ html[dir="rtl"] .quiz-question-title {
 
       <!-- View 2B: Sheet List for Selected Subject -->
       <section id="view-sheet-list" class="page-view">
-        <div style="margin-bottom: 2rem; display: flex; items-center; justify-content: space-between;">
-          <div>
-            <button class="btn-luxury" style="padding: 0.3rem 0.8rem; font-size: 0.8rem; margin-bottom: 1rem;" onclick="window.DentistoireApp.navigateTo('view-subjects')">
-              &larr; Back to Subjects
-            </button>
-            <h2 id="sheet-list-subject-title" style="font-family: 'Playfair Display', serif; font-size: 2.2rem; margin-bottom: 0.5rem;">Oral Histology Sheets</h2>
-            <p id="sheet-list-subject-desc" style="color: var(--text-secondary);">Select a sheet to launch the interactive questions and reading content.</p>
-          </div>
+        <div style="margin-bottom: 2rem;">
+          <button class="btn-luxury" style="padding: 0.3rem 0.8rem; font-size: 0.8rem; margin-bottom: 1rem;" onclick="window.DentistoireApp.navigateTo('view-subjects')">
+            &larr; Back to Subjects
+          </button>
+          <h2 id="sheet-list-subject-title" style="font-family: 'Playfair Display', serif; font-size: 2.2rem; margin-bottom: 0.5rem;">Oral Histology Sheets</h2>
+          <p id="sheet-list-subject-desc" style="color: var(--text-secondary);">Select a sheet to launch the interactive questions and reading content.</p>
         </div>
         <div class="cards-grid" id="sheets-grid-container"></div>
       </section>
@@ -1164,13 +1181,13 @@ html[dir="rtl"] .quiz-question-title {
         </div>
       </section>
 
-      <!-- View 7: Private Admin Hub -->
+      <!-- View 7: Private Admin Hub with Registered Student Logins & PDF Importer -->
       <section id="view-admin-hub" class="page-view">
         <div class="glass-widget-card" style="space-y: 2rem;">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
             <div>
               <h2 style="font-family: 'Playfair Display', serif; font-size: 1.8rem;">Admin Control Center</h2>
-              <p style="color: var(--text-secondary); font-size: 0.9rem;">Manage subjects, sheets, questions, PDF imports, and registered users.</p>
+              <p style="color: var(--text-secondary); font-size: 0.9rem;">Manage subjects, sheets, questions, PDF imports, and registered student logins.</p>
             </div>
             <div style="display: flex; gap: 0.5rem;">
               <button class="btn-luxury" id="btn-export-backup"><i class="fa-solid fa-download"></i> Backup State</button>
@@ -1179,7 +1196,7 @@ html[dir="rtl"] .quiz-question-title {
 
           <!-- PDF Importer Workflow -->
           <div style="background: var(--bg-secondary); border: 1px solid var(--card-border); padding: 1.5rem; border-radius: var(--radius-md); margin-bottom: 2rem;">
-            <h3 style="margin-bottom: 1rem;"><i class="fa-solid fa-file-pdf" style="color: var(--primary);"></i> PDF Question Import Tool</h3>
+            <h3 style="margin-bottom: 1rem;"><i class="fa-solid fa-file-pdf" style="color: var(--primary);"></i> Real PDF & Text Question Import Tool</h3>
             
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
               <div>
@@ -1192,30 +1209,92 @@ html[dir="rtl"] .quiz-question-title {
               </div>
             </div>
 
-            <div id="pdf-drop-zone" style="border: 2px dashed var(--card-border); padding: 2.5rem; text-align: center; border-radius: var(--radius-md); cursor: pointer; background: var(--card-bg);">
-              <i class="fa-solid fa-cloud-arrow-up" style="font-size: 2.5rem; color: var(--primary); margin-bottom: 0.75rem;"></i>
-              <h4 style="margin-bottom: 0.3rem;">Drag & Drop PDF or Click to Browse</h4>
-              <p style="font-size: 0.85rem; color: var(--text-secondary);">Extracts multiple choice questions, options, and explanations automatically.</p>
-              <input type="file" id="pdf-file-input" accept=".pdf,.txt,.docx" style="display: none;">
+            <!-- Absolute Overlay Dropzone -->
+            <div id="pdf-drop-zone" style="position: relative; border: 2px dashed var(--card-border); padding: 2.5rem 1.5rem; text-align: center; border-radius: var(--radius-md); background: var(--card-bg); overflow: hidden; margin-bottom: 1rem;">
+              <input type="file" id="pdf-file-input" accept=".pdf,.txt,.docx,.doc" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; z-index: 10;">
+              
+              <i class="fa-solid fa-cloud-arrow-up" style="font-size: 2.8rem; color: var(--primary); margin-bottom: 0.75rem; pointer-events: none;"></i>
+              <h4 style="margin-bottom: 0.3rem; font-size: 1.15rem; pointer-events: none;">Drag & Drop Your Real PDF File or Click Anywhere to Browse</h4>
+              <p style="font-size: 0.85rem; color: var(--text-secondary); pointer-events: none;">PDF.js engine parses binary PDF text and creates interactive quiz automatically</p>
+            </div>
+
+            <!-- Direct Paste Alternative Box -->
+            <div style="background: var(--card-bg); border: 1px solid var(--card-border); padding: 1rem; border-radius: var(--radius-md);">
+              <label style="font-size: 0.85rem; font-weight: 600; display: block; margin-bottom: 0.4rem;">
+                <i class="fa-solid fa-paste" style="color: var(--primary);"></i> Or Paste Question Text / PDF Content Directly:
+              </label>
+              <textarea id="pdf-paste-input" class="luxury-search-bar" style="width: 100%; height: 100px; border-radius: var(--radius-sm); resize: vertical; font-size: 0.85rem;" placeholder="Paste dental lecture text or questions here (e.g. Q1. Which cell produces enamel matrix? A. Ameloblasts B. Odontoblasts C. Cementoblasts D. Osteoblasts Answer: A)..."></textarea>
+              <button class="btn-luxury" style="margin-top: 0.75rem; padding: 0.35rem 0.95rem; font-size: 0.8rem;" onclick="window.DentistoireApp.parsePastedTextQuestions()">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> Parse Pasted Questions & Create Quiz
+              </button>
+            </div>
+
+            <!-- PDF Import Loading State -->
+            <div id="pdf-import-loading-state" style="display: none; margin-top: 1.5rem; background: var(--bg-secondary); padding: 1.5rem; border-radius: var(--radius-md); border: 1px solid var(--card-border); text-align: center;">
+              <i class="fa-solid fa-circle-notch fa-spin" style="font-size: 2.5rem; color: var(--primary); margin-bottom: 0.75rem;"></i>
+              <h4 style="font-size: 1.1rem; margin-bottom: 0.3rem;" id="pdf-loading-title">Processing PDF File...</h4>
+              <p style="font-size: 0.85rem; color: var(--text-secondary);" id="pdf-loading-desc">Extracting text, questions, options, and explanations from document.</p>
+            </div>
+
+            <!-- PDF Import Error State Card -->
+            <div id="pdf-import-error-card" style="display: none; margin-top: 1.5rem; background: rgba(239, 68, 68, 0.12); padding: 1.25rem; border-radius: var(--radius-md); border: 1px solid #ef4444; color: var(--text-primary);">
+              <div style="display: flex; gap: 0.85rem; align-items: flex-start;">
+                <i class="fa-solid fa-triangle-exclamation" style="font-size: 1.5rem; color: #ef4444; margin-top: 0.2rem;"></i>
+                <div>
+                  <h4 style="font-size: 1.1rem; color: #ef4444; margin-bottom: 0.3rem;" id="pdf-error-title">Import Failed</h4>
+                  <p style="font-size: 0.88rem; color: var(--text-primary); line-height: 1.5;" id="pdf-error-desc">No valid multiple choice questions could be detected in this document.</p>
+                </div>
+              </div>
             </div>
 
             <!-- PDF Parsed Questions Preview Box -->
             <div id="pdf-parsed-preview" style="display: none; margin-top: 1.5rem; background: var(--card-bg); padding: 1.25rem; border-radius: var(--radius-md); border: 1px solid var(--card-border);">
-              <h4 style="margin-bottom: 0.75rem;"><i class="fa-solid fa-eye"></i> Extracted Questions Preview (4 Questions Detected)</h4>
-              <div id="pdf-preview-list" style="max-height: 200px; overflow-y: auto; margin-bottom: 1rem; font-size: 0.85rem;"></div>
+              <h4 style="margin-bottom: 0.75rem;" id="pdf-preview-title"><i class="fa-solid fa-eye"></i> Extracted Questions Preview</h4>
+              <div id="pdf-preview-list" style="max-height: 220px; overflow-y: auto; margin-bottom: 1rem; font-size: 0.85rem;"></div>
               <button class="btn-luxury" onclick="window.DentistoireApp.confirmImportPDFQuestions()"><i class="fa-solid fa-file-import"></i> Confirm & Import into Sheet</button>
+            </div>
+
+            <!-- PDF Import Success & Instant Launch Banner -->
+            <div id="pdf-import-success-card" style="display: none; margin-top: 1.5rem; background: var(--primary-glow); padding: 1.5rem; border-radius: var(--radius-md); border: 2px solid var(--primary);">
+              <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                <div style="width: 48px; height: 48px; border-radius: 50%; background: #10b981; color: white; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; shrink: 0;">
+                  <i class="fa-solid fa-check"></i>
+                </div>
+                <div>
+                  <h3 style="font-family: 'Playfair Display', serif; font-size: 1.35rem; color: var(--text-primary); margin-bottom: 0.2rem;" id="import-success-title">✅ Import Successful</h3>
+                  <p style="font-size: 0.88rem; color: var(--text-secondary);" id="import-success-subtitle">Successfully added new questions to your curriculum.</p>
+                </div>
+              </div>
+
+              <!-- Details Grid -->
+              <div style="background: var(--card-bg); padding: 1rem; border-radius: var(--radius-sm); border: 1px solid var(--card-border); display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.85rem; margin-bottom: 1.25rem; font-size: 0.85rem;">
+                <div><span style="color: var(--text-muted); display: block; font-size: 0.75rem;">Source Document:</span><strong id="import-detail-file">document.pdf</strong></div>
+                <div><span style="color: var(--text-muted); display: block; font-size: 0.75rem;">Destination Path:</span><strong id="import-detail-path">Oral Histology &rarr; Enamel</strong></div>
+                <div><span style="color: var(--text-muted); display: block; font-size: 0.75rem;">Questions Detected:</span><strong id="import-detail-detected">42 Questions</strong></div>
+                <div><span style="color: var(--text-muted); display: block; font-size: 0.75rem;">Status & Added:</span><strong id="import-detail-added" style="color: #10b981;">42 Added (0 Duplicates Skipped)</strong></div>
+              </div>
+
+              <!-- Action Buttons -->
+              <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+                <button class="btn-luxury glowing-continue-btn" style="padding: 0.6rem 1.4rem; font-size: 0.9rem;" onclick="window.DentistoireApp.launchImportedQuizNow()">
+                  <i class="fa-solid fa-play"></i> ▶️ Start Quiz
+                </button>
+                <button class="btn-luxury" style="padding: 0.6rem 1.2rem; font-size: 0.9rem; background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--card-border);" onclick="window.DentistoireApp.navigateToImportedSheet()">
+                  <i class="fa-solid fa-folder-open"></i> 📚 View Sheet in Library
+                </button>
+              </div>
             </div>
           </div>
 
-          <!-- Registered Users Table -->
+          <!-- Registered Student Logins Directory Table -->
           <div style="background: var(--bg-secondary); border: 1px solid var(--card-border); padding: 1.5rem; border-radius: var(--radius-md);">
-            <h3 style="margin-bottom: 1rem;"><i class="fa-solid fa-users"></i> Registered Users Directory</h3>
+            <h3 style="margin-bottom: 1rem;"><i class="fa-solid fa-users"></i> Registered Student Logins Directory</h3>
             <div style="overflow-x: auto;">
               <table style="width: 100%; text-align: left; font-size: 0.85rem; border-collapse: collapse;">
                 <thead>
                   <tr style="border-bottom: 1px solid var(--card-border); color: var(--text-muted);">
-                    <th style="padding: 0.75rem;">User</th>
-                    <th style="padding: 0.75rem;">Email</th>
+                    <th style="padding: 0.75rem;">Student User</th>
+                    <th style="padding: 0.75rem;">Email Address</th>
                     <th style="padding: 0.75rem;">Role</th>
                     <th style="padding: 0.75rem;">Joined Date</th>
                     <th style="padding: 0.75rem;">Status</th>
@@ -1231,7 +1310,7 @@ html[dir="rtl"] .quiz-question-title {
       <!-- View 8: Profile & Achievements Badges Grid -->
       <section id="view-profile" class="page-view">
         <div class="glass-widget-card" style="text-align: center; padding: 3rem 1.5rem; margin-bottom: 2rem;">
-          <div style="width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--accent-gold)); margin: 0 auto 1rem auto; display: flex; align-items: center; justify-content: center; font-size: 2rem; color: white; font-weight: 700;">HZ</div>
+          <div style="width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--accent-gold)); margin: 0 auto 1rem auto; display: flex; align-items: center; justify-content: center; font-size: 2rem; color: white; font-weight: 700;" id="profile-user-avatar">HZ</div>
           <h2 style="font-family: 'Playfair Display', serif; font-size: 2rem; margin-bottom: 0.2rem;" id="profile-user-name">Dr. Hadeel Zadin</h2>
           <p style="color: var(--text-secondary); margin-bottom: 1.5rem;" id="profile-user-role">Dental Student &bull; Admin Scholar</p>
           
@@ -1240,6 +1319,10 @@ html[dir="rtl"] .quiz-question-title {
             <div><h3 style="font-size: 1.5rem;" id="profile-val-level">Freshman</h3><p style="color: var(--text-muted); font-size: 0.85rem;">Academic Rank</p></div>
             <div><h3 style="font-size: 1.5rem;" id="profile-val-streak">0 Days</h3><p style="color: var(--text-muted); font-size: 0.85rem;">Study Streak</p></div>
           </div>
+
+          <button class="btn-luxury" style="padding: 0.4rem 1.2rem; font-size: 0.85rem; background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid #ef4444;" onclick="window.DentistoireApp.performLogout()">
+            <i class="fa-solid fa-right-from-bracket"></i> Log Out of Account
+          </button>
         </div>
 
         <div class="glass-widget-card">
@@ -1308,25 +1391,78 @@ html[dir="rtl"] .quiz-question-title {
     </div>
   </div>
 
-  <!-- User Authentication Modal -->
+  <!-- Dual-Tab Student Authentication Modal (Log In & Sign Up) -->
   <div class="quiz-modal-backdrop" id="auth-modal" style="display: none;">
-    <div class="quiz-runner-card" style="max-width: 450px;">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-        <h3 style="font-family: 'Playfair Display', serif; font-size: 1.5rem;">Account Access</h3>
+    <div class="quiz-runner-card" style="max-width: 480px; text-align: left;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <h3 style="font-family: 'Playfair Display', serif; font-size: 1.6rem;"><i class="fa-solid fa-tooth" style="color: var(--primary);"></i> Student Account Access</h3>
         <button onclick="window.DentistoireApp.closeAuthModal()" style="background: transparent; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
       </div>
 
-      <div style="margin-bottom: 1.25rem;">
-        <label style="font-size: 0.85rem; font-weight: 600; display: block; text-align: left; margin-bottom: 0.3rem;">Email Address:</label>
-        <input type="email" id="auth-email" class="luxury-search-bar" style="width: 100%;" placeholder="admin@dentistoire.edu">
+      <!-- Auth Tabs Bar -->
+      <div style="display: flex; border-bottom: 2px solid var(--card-border); margin-bottom: 1.25rem;">
+        <button id="auth-tab-login" class="btn-luxury" style="flex: 1; border-radius: 0; background: transparent; color: var(--primary); border-bottom: 2px solid var(--primary); font-weight: 700; padding: 0.5rem;" onclick="window.DentistoireApp.switchAuthTab('login')">
+          <i class="fa-solid fa-right-to-bracket"></i> Log In
+        </button>
+        <button id="auth-tab-signup" class="btn-luxury" style="flex: 1; border-radius: 0; background: transparent; color: var(--text-muted); padding: 0.5rem;" onclick="window.DentistoireApp.switchAuthTab('signup')">
+          <i class="fa-solid fa-user-plus"></i> Create Account
+        </button>
       </div>
 
-      <div style="margin-bottom: 1.5rem;">
-        <label style="font-size: 0.85rem; font-weight: 600; display: block; text-align: left; margin-bottom: 0.3rem;">Password:</label>
-        <input type="password" id="auth-password" class="luxury-search-bar" style="width: 100%;" placeholder="••••••••">
-      </div>
+      <!-- Form 1: Log In -->
+      <form id="auth-form-login" onsubmit="event.preventDefault(); window.DentistoireApp.performLogin();">
+        <div style="margin-bottom: 1.1rem;">
+          <label style="font-size: 0.85rem; font-weight: 600; display: block; margin-bottom: 0.3rem;">Email Address:</label>
+          <input type="email" id="auth-login-email" class="luxury-search-bar" style="width: 100%;" placeholder="student@dentistoire.edu or admin@dentistoire.edu" required>
+        </div>
 
-      <button class="btn-luxury" style="width: 100%; justify-content: center; margin-bottom: 0.75rem;" onclick="window.DentistoireApp.performLogin()">Sign In / Create Account</button>
+        <div style="margin-bottom: 1.5rem;">
+          <label style="font-size: 0.85rem; font-weight: 600; display: block; margin-bottom: 0.3rem;">Password:</label>
+          <input type="password" id="auth-login-password" class="luxury-search-bar" style="width: 100%;" placeholder="••••••••" required>
+        </div>
+
+        <button type="submit" class="btn-luxury glowing-continue-btn" style="width: 100%; justify-content: center; padding: 0.65rem; font-size: 0.95rem;">
+          <i class="fa-solid fa-right-to-bracket"></i> Sign In to Account
+        </button>
+
+        <p style="font-size: 0.78rem; color: var(--text-muted); text-align: center; margin-top: 1rem;">
+          Faculty Admin? Use <code style="background: var(--bg-secondary); padding: 0.1rem 0.3rem;">admin@dentistoire.edu</code> to unlock Admin Hub.
+        </p>
+      </form>
+
+      <!-- Form 2: Create Account / Sign Up -->
+      <form id="auth-form-signup" style="display: none;" onsubmit="event.preventDefault(); window.DentistoireApp.performSignup();">
+        <div style="margin-bottom: 1rem;">
+          <label style="font-size: 0.85rem; font-weight: 600; display: block; margin-bottom: 0.3rem;">Full Name:</label>
+          <input type="text" id="auth-signup-name" class="luxury-search-bar" style="width: 100%;" placeholder="e.g. Dr. Sarah Al-Sayed" required>
+        </div>
+
+        <div style="margin-bottom: 1rem;">
+          <label style="font-size: 0.85rem; font-weight: 600; display: block; margin-bottom: 0.3rem;">Email Address:</label>
+          <input type="email" id="auth-signup-email" class="luxury-search-bar" style="width: 100%;" placeholder="sarah@dentistoire.edu" required>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem; margin-bottom: 1.5rem;">
+          <div>
+            <label style="font-size: 0.85rem; font-weight: 600; display: block; margin-bottom: 0.3rem;">Password:</label>
+            <input type="password" id="auth-signup-password" class="luxury-search-bar" style="width: 100%;" placeholder="••••••••" required>
+          </div>
+          <div>
+            <label style="font-size: 0.85rem; font-weight: 600; display: block; margin-bottom: 0.3rem;">Academic Year:</label>
+            <select id="auth-signup-year" class="luxury-search-bar" style="width: 100%;">
+              <option value="1st Year">1st Year Student</option>
+              <option value="2nd Year" selected>2nd Year Student</option>
+              <option value="3rd Year">3rd Year Student</option>
+              <option value="4th Year">4th Year Student</option>
+              <option value="Clinical Intern">Clinical Intern</option>
+            </select>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-luxury glowing-continue-btn" style="width: 100%; justify-content: center; padding: 0.65rem; font-size: 0.95rem;">
+          <i class="fa-solid fa-user-plus"></i> Create Student Account & Log In
+        </button>
+      </form>
     </div>
   </div>
 
@@ -1401,13 +1537,330 @@ window.DENTAL_SUBJECTS = [
       ar: "علم التكوين الجنيني للوجه، المينا، العاج، ملاط الأسنان، اللب، والرباط السنخي."
     },
     sheets: [
-      { id: "oh-s1", title: { en: "1. Embryology", ar: "1. علم الأجنة" }, topicsCount: 3 },
-      { id: "oh-s2", title: { en: "2. Development of the face", ar: "2. تطور الوجه" }, topicsCount: 4 },
-      { id: "oh-s3", title: { en: "3. Development of the mouth", ar: "3. تطور الفم" }, topicsCount: 3 },
+      { id: "oh-s1", title: { en: "1. Embryology", ar: "1. علم الأجنة" }, topicsCount: 0 },
+      {
+        id: "oh-s2",
+        title: { en: "2. Development of the face", ar: "2. تطور الوجه" },
+        topicsCount: 16,
+        quizzes: [
+          {
+            id: "q-ohs2-1",
+            type: "mcq",
+            question: {
+              en: "About development of maxilla which of the following is true?",
+              ar: "عن تطور الفك العلوي أي مما يلي صحيح؟"
+            },
+            options: [
+              { en: "It has one center of ossification close to anterosuperior dental nerve", ar: "له مركز تعظم واحد بالقرب من العصب السني الأمامي العلوي" },
+              { en: "It has two center of ossification at the future canine fossa", ar: "له مركزان للتعظم عند حفرة الأنياب المستقبلية" },
+              { en: "None of the above", ar: "لا شيء مما سبق" },
+              { en: "All of the above", ar: "كل ما سبق" }
+            ],
+            correct: 0,
+            explanation: {
+              en: "The maxilla develops from a single center of ossification close to the anterosuperior dental nerve.",
+              ar: "يتطور الفك العلوي من مركز تعظم واحد بالقرب من العصب السني الأمامي العلوي."
+            }
+          },
+          {
+            id: "q-ohs2-2",
+            type: "mcq",
+            question: {
+              en: "About age changes of mandible all of the following are true except:",
+              ar: "عن التغيرات العمرية للفك السفلي جميع ما يلي صحيح ما عدا:"
+            },
+            options: [
+              { en: "The mandible at birth differs from adult bone", ar: "يختلف الفك السفلي عند الولادة عن عظم البالغين" },
+              { en: "In senility, the resorption of alveolar bone with loss of teeth causes increase of mandibular angle", ar: "في الشيخوخة، امتصاص العظم السنخي مع فقدان الأسنان يؤدي لزيادة زاوية الفك السفلي" },
+              { en: "The mandibular angle at childhood is 110°", ar: "زاوية الفك السفلي في مرحلة الطفولة 110°" },
+              { en: "Both A & B", ar: "كل من أ و ب" },
+              { en: "None of above", ar: "لا شيء مما سبق" }
+            ],
+            correct: 2,
+            explanation: {
+              en: "The mandibular angle in childhood is obtuse (around 140°), not 110°.",
+              ar: "زاوية الفك السفلي في الطفولة تكون منفرجة (حوالي 140 درجة) وليست 110 درجات."
+            }
+          },
+          {
+            id: "q-ohs2-3",
+            type: "mcq",
+            question: {
+              en: "About development of lip which of the following is true?",
+              ar: "عن تطور الشفة أي مما يلي صحيح؟"
+            },
+            options: [
+              { en: "The lower lip develops by merging of mandibular processes", ar: "تتطور الشفة السفلى باندماج النتوءين الفكيين السفليين" },
+              { en: "The upper lip is formed from two third medial nasal processes and one third maxillary processes", ar: "تتكون الشفة العليا من ثلثي النتوءات الأنفية الإنسية وثلث النتوءات الفكية العلوية" },
+              { en: "Cleft lip is malformation of lower lip", ar: "انشقاق الشفة هو تشوه في الشفة السفلى" },
+              { en: "All of the above", ar: "كل ما سبق" }
+            ],
+            correct: 0,
+            explanation: {
+              en: "The lower lip develops by the merging of the bilateral mandibular processes in the midline.",
+              ar: "تتطور الشفة السفلى من خلال اندماج النتوءات الفكية السفلية في الخط المتوسط."
+            }
+          },
+          {
+            id: "q-ohs2-4",
+            type: "mcq",
+            question: {
+              en: "About development of mandible which of the following is true?",
+              ar: "عن تطور الفك السفلي أي مما يلي صحيح؟"
+            },
+            options: [
+              { en: "It develops as intracartilaginous bone", ar: "يتطور كعظم داخل غضروفي" },
+              { en: "Meckel's cartilage shares in ossification", ar: "يشارك غضروف ميكل في التعظم" },
+              { en: "It has two ossification centers", ar: "له مركزان للتعظم" },
+              { en: "Both A & B", ar: "كل من أ و ب" },
+              { en: "None of the above", ar: "لا شيء مما سبق" },
+              { en: "All of the above", ar: "كل ما سبق" }
+            ],
+            correct: 4,
+            explanation: {
+              en: "The mandible develops primarily intramembranously in the fibrous membrane covering Meckel's cartilage.",
+              ar: "يتطور الفك السفلي بشكل رئيسي عن طريق التعظم الغشائي في الغشاء الأليفي المحيط بغضروف ميكل."
+            }
+          },
+          {
+            id: "q-ohs2-5",
+            type: "mcq",
+            question: {
+              en: "About Meckel's cartilage which of the following are true?",
+              ar: "عن غضروف ميكل (Meckel's cartilage) أي مما يلي صحيح؟"
+            },
+            options: [
+              { en: "Shares in the ossification of the mandible", ar: "يشارك في تعظم الفك السفلي" },
+              { en: "The ventral end ossifies to form malleus and incus of the inner ear", ar: "يتعظم الطرف البطني لتشكيل المطرقة والسندان في الأذن الداخلية" },
+              { en: "All of the above", ar: "كل ما سبق" },
+              { en: "None of the above", ar: "لا شيء مما سبق" }
+            ],
+            correct: 3,
+            explanation: {
+              en: "The dorsal (not ventral) end forms the malleus and incus; Meckel's cartilage does not directly ossify into mandibular bone.",
+              ar: "الطرف الظهري (وليس البطني) يشكل المطرقة والسندان؛ وغضروف ميكل لا يتحول مباشرة إلى عظم الفك."
+            }
+          },
+          {
+            id: "q-ohs2-6",
+            type: "mcq",
+            question: {
+              en: "Which of the following embryonic structures contribute to the formation of the upper lip?",
+              ar: "أي من البنى الجنينية التالية تساهم في تشكيل الشفة العليا؟"
+            },
+            options: [
+              { en: "Mandibular process", ar: "النتوء الفكي السفلي" },
+              { en: "Maxillary processes and median nasal process", ar: "النتوءات الفكية العلوية والنتوء الأنفي المتوسط" },
+              { en: "Lateral nasal processes", ar: "النتوءات الأنفية الجانبية" },
+              { en: "Second pharyngeal arch", ar: "القوس البلعومي الثاني" }
+            ],
+            correct: 1,
+            explanation: {
+              en: "The upper lip is formed by the fusion of the two maxillary processes with the median nasal process.",
+              ar: "تتكون الشفة العليا من اندماج النتوءين الفكيين العلويين مع النتوء الأنفي المتوسط."
+            }
+          },
+          {
+            id: "q-ohs2-7",
+            type: "mcq",
+            question: {
+              en: "About median cleft of the mandible which of the following are true?",
+              ar: "عن الانشقاق المتوسط للفك السفلي أي مما يلي صحيح؟"
+            },
+            options: [
+              { en: "It is a common condition", ar: "حالة شائعة" },
+              { en: "Failure of mesenchymal masses of zygomatic process to merge together", ar: "فشل كتل الكتلة المتوسطة للنتوء الوجني في الاندماج" },
+              { en: "No bony union in the midline of mandible", ar: "غياب الاتصال العظمي في الخط المتوسط للفك السفلي" },
+              { en: "Both A & B", ar: "كل من أ و ب" }
+            ],
+            correct: 2,
+            explanation: {
+              en: "Median cleft of mandible is a rare condition characterized by complete failure of bony union in the midline.",
+              ar: "انشقاق الفك السفلي المتوسط هو حالة نادرة تتميز بعدم وجود التئام عظمي في المنتصف."
+            }
+          },
+          {
+            id: "q-ohs2-8",
+            type: "mcq",
+            question: {
+              en: "About nasolacrimal duct all of the following are true except:",
+              ar: "عن القناة الأنفية الدمعية جميع ما يلي صحيح ما عدا:"
+            },
+            options: [
+              { en: "Drain excess tears from eye to nasal cavity", ar: "تصريف الدموع الزائدة من العين إلى التجويف الأنفي" },
+              { en: "It lies between maxillary process and lateral nasal process", ar: "تقع بين النتوء الفكي العلوي والنتوء الأنفي الجانبي" },
+              { en: "Invested by bone during ossification of the mandible", ar: "تغلف بالعظم أثناء تعظم الفك السفلي" },
+              { en: "Both A & B", ar: "كل من أ و ب" }
+            ],
+            correct: 2,
+            explanation: {
+              en: "The nasolacrimal duct is unrelated to mandibular ossification.",
+              ar: "القناة الأنفية الدمعية تقع في الوجه العلوي ولا تكتسي بالعظم أثناء تعظم الفك السفلي."
+            }
+          },
+          {
+            id: "q-ohs2-9",
+            type: "mcq",
+            question: {
+              en: "About mandibular process which of the following are true?",
+              ar: "عن النتوء الفكي السفلي أي مما يلي صحيح؟"
+            },
+            options: [
+              { en: "Develop from first pharyngeal arch", ar: "يتطور من القوس البلعومي الأول" },
+              { en: "Appear initially as bilateral structures but then merge with each other in midline", ar: "يظهر في البداية كتركيبين ثنائيين ثم يندمجان في الخط المتوسط" },
+              { en: "Give rise to mandible, lower part of face and lower lip", ar: "يعطي الفك السفلي والجزء السفلي من الوجه والشفة السفلى" },
+              { en: "Both B & C", ar: "كل من ب و ج" },
+              { en: "All of above", ar: "كل ما سبق" },
+              { en: "None of the above", ar: "لا شيء مما سبق" }
+            ],
+            correct: 4,
+            explanation: {
+              en: "All statements regarding first arch origin, bilateral structure merging, and derivative structures are true.",
+              ar: "جميع العبارات المتعلقة بأصله من القوس الأول واندماجه وإعطائه الفك والشفة السفلى صحيحة."
+            }
+          },
+          {
+            id: "q-ohs2-10",
+            type: "mcq",
+            question: {
+              en: "The ossification center of the developing mandible arises between:",
+              ar: "يظهر مركز تعظم الفك السفلي النامي بين:"
+            },
+            options: [
+              { en: "Mental and incisive nerves", ar: "العصب الذقني والعصب القاطعي" },
+              { en: "Mandibular and maxillary nerves", ar: "العصب الفكي السفلي والعصب الفكي العلوي" },
+              { en: "Superior alveolar and infra-orbital nerve", ar: "العصب السنخي العلوي والعصب تحت الحجاج" },
+              { en: "None of above", ar: "لا شيء مما سبق" }
+            ],
+            correct: 0,
+            explanation: {
+              en: "The primary center of ossification for each half of the mandible appears at the bifurcation of inferior alveolar nerve into mental and incisive nerves.",
+              ar: "يظهر مركز التعظم الرئيسي للفك السفلي عند تفرع العصب السنخي السفلي إلى العصبين الذقني والقاطعي."
+            }
+          },
+          {
+            id: "q-ohs2-11",
+            type: "mcq",
+            question: {
+              en: "The face develops from:",
+              ar: "يتطور الوجه من:"
+            },
+            options: [
+              { en: "Two primordial prominences surrounding central depression", ar: "بروزين بدائيين يحيطان بانخفاض مركزي" },
+              { en: "4 primordial prominences surrounding central depression", ar: "4 بروزات بدائية تحيط بانخفاض مركزي" },
+              { en: "6 primordial prominences surrounding central depression", ar: "6 بروزات بدائية تحيط بانخفاض مركزي" },
+              { en: "None of above", ar: "لا شيء مما سبق" }
+            ],
+            correct: 3,
+            explanation: {
+              en: "The face develops from FIVE facial primordia (1 frontonasal, 2 maxillary, and 2 mandibular prominences).",
+              ar: "يتطور الوجه من 5 بروزات وجهية بدائية (1 جبهي أنفي، 2 فكي علوي، 2 فكي سفلي)."
+            }
+          },
+          {
+            id: "q-ohs2-12",
+            type: "mcq",
+            question: {
+              en: "About median cleft lip all of the following are true except:",
+              ar: "عن انشقاق الشفة المتوسط جميع ما يلي صحيح ما عدا:"
+            },
+            options: [
+              { en: "It is a common condition", ar: "حالة شائعة" },
+              { en: "Partial or complete failure of medial nasal processes to merge together", ar: "فشل جزئي أو كامل في اندماج النتوءات الأنفية الإنسية" },
+              { en: "It is called hare lip", ar: "تسمى الشفة الأرنبية" },
+              { en: "Both B & C", ar: "كل من ب و ج" },
+              { en: "None of above", ar: "لا شيء مما سبق" }
+            ],
+            correct: 0,
+            explanation: {
+              en: "True median cleft lip (hare lip) is extremely rare, not common.",
+              ar: "انشقاق الشفة المتوسط الحقيقي (الشفة الأرنبية) هو تشوه نادر جداً وليس شائعاً."
+            }
+          },
+          {
+            id: "q-ohs2-13",
+            type: "mcq",
+            question: {
+              en: "The ossification center of the developing mandible arises between:",
+              ar: "يظهر مركز تعظم الفك السفلي النامي بين:"
+            },
+            options: [
+              { en: "Lingual nerve & chorda tympani branch", ar: "العصب اللساني وفرع حبل الطبل" },
+              { en: "Mandibular nerve and Maxillary nerve", ar: "العصب الفكي السفلي والعصب الفكي العلوي" },
+              { en: "Close to canine fossa", ar: "بالقرب من حفرة الأنياب" },
+              { en: "None of above", ar: "لا شيء مما سبق" }
+            ],
+            correct: 3,
+            explanation: {
+              en: "The center arises specifically between mental and incisive nerves.",
+              ar: "ينشأ مركز التعظم تحديداً بين العصب الذقني والعصب القاطعي."
+            }
+          },
+          {
+            id: "q-ohs2-14",
+            type: "mcq",
+            question: {
+              en: "About Median cleft of the lip all of the following are true except:",
+              ar: "عن انشقاق الشفة المتوسط جميع ما يلي صحيح ما عدا:"
+            },
+            options: [
+              { en: "It is common", ar: "أنه شائع" },
+              { en: "It is called hare lip", ar: "يسمى الشفة الأرنبية" },
+              { en: "It results from failure of medial nasal processes to merge together", ar: "ينتج عن عدم اندماج النتوءات الأنفية الإنسية" },
+              { en: "None of the above", ar: "لا شيء مما سبق" }
+            ],
+            correct: 0,
+            explanation: {
+              en: "Median cleft lip is a rare malformation.",
+              ar: "انشقاق الشفة المتوسط هو تشوه جنيني نادر."
+            }
+          },
+          {
+            id: "q-ohs2-15",
+            type: "mcq",
+            question: {
+              en: "About cleft lip which of the following is true?",
+              ar: "عن الشفة الأرنبية (انشقاق الشفة) أي مما يلي صحيح؟"
+            },
+            options: [
+              { en: "It is a malformation of lower lip", ar: "تشوه في الشفة السفلى" },
+              { en: "Bilateral cleft lip results from failure of maxillary processes to fuse with intermaxillary segment at one side", ar: "انشقاق الشفة الثنائي يقع بسبب فشل النتوء الفكي العلوي في الاندماج في جانب واحد" },
+              { en: "Both A & B", ar: "كل من أ و ب" },
+              { en: "None of the above", ar: "لا شيء مما سبق" }
+            ],
+            correct: 3,
+            explanation: {
+              en: "Cleft lip affects the upper lip (not lower); bilateral cleft lip is failure of fusion on BOTH sides.",
+              ar: "انشقاق الشفة يصيب الشفة العليا، والانشقاق الثنائي يحدث بسبب فشل الاندماج في الجانبين معاً."
+            }
+          },
+          {
+            id: "q-ohs2-16",
+            type: "mcq",
+            question: {
+              en: "About Meckel's cartilage which of the following are true?",
+              ar: "عن غضروف ميكل أي مما يلي صحيح؟"
+            },
+            options: [
+              { en: "Does not share in the ossification of the mandible", ar: "لا يشارك في تعظم الفك السفلي" },
+              { en: "The dorsal end ossifies to form the malleus and incus of the inner ear", ar: "يتعظم الطرف الظهري لتشكيل المطرقة والسندان في الأذن الداخلية" },
+              { en: "A typical hyaline cartilage covered by fibrous tissue", ar: "غضروف زجاجي نموذجي مغطى بنسيج أليفي" },
+              { en: "Both B & C", ar: "كل من ب و ج" },
+              { en: "All of the above", ar: "كل ما سبق" }
+            ],
+            correct: 4,
+            explanation: {
+              en: "All statements regarding its hyaline cartilage nature, non-participation in mandibular body ossification, and dorsal end forming malleus & incus are true.",
+              ar: "جميع العبارات المتعلقة بطبيعته الغضروفية الزجاجية وعدم مشاركته المباشرة وتشكيل طرفه الظهري للمطرقة والسندان صحيحة."
+            }
+          }
+        ]
+      },
+      { id: "oh-s3", title: { en: "3. Development of the mouth", ar: "3. تطور الفم" }, topicsCount: 0 },
       {
         id: "oh-s4",
         title: { en: "4. Tooth development and growth", ar: "4. تطور ونمو الأسنان" },
-        topicsCount: 4,
+        topicsCount: 1,
         quizzes: [
           {
             id: "q-oh-1",
@@ -1435,7 +1888,7 @@ window.DENTAL_SUBJECTS = [
       {
         id: "oh-s5",
         title: { en: "5. Enamel", ar: "5. المينا" },
-        topicsCount: 3,
+        topicsCount: 1,
         quizzes: [
           {
             id: "q-oh-2",
@@ -1460,16 +1913,16 @@ window.DENTAL_SUBJECTS = [
           }
         ]
       },
-      { id: "oh-s6", title: { en: "6. Dentin", ar: "6. العاج" }, topicsCount: 4 },
-      { id: "oh-s7", title: { en: "7. Cementum", ar: "7. الملاط" }, topicsCount: 3 },
-      { id: "oh-s8", title: { en: "8. Dental pulp", ar: "8. لب السن" }, topicsCount: 4 },
-      { id: "oh-s9", title: { en: "9. Periodontal ligament (PDL)", ar: "9. الرباط السنخي السني" }, topicsCount: 4 },
-      { id: "oh-s10", title: { en: "10. Alveolar bone", ar: "10. العظم السنخي" }, topicsCount: 3 },
-      { id: "oh-s11", title: { en: "11. Maxillary sinus", ar: "11. الجيب الفكي العلوي" }, topicsCount: 2 },
-      { id: "oh-s12", title: { en: "12. Eruption and shedding", ar: "12. البزوغ والتبديل" }, topicsCount: 3 },
-      { id: "oh-s13", title: { en: "13. Temporomandibular joint (TMJ)", ar: "13. المفصل الصدغي الفكي" }, topicsCount: 4 },
-      { id: "oh-s14", title: { en: "14. Oral mucosa & Gingiva", ar: "14. المخاطية الفموية واللثة" }, topicsCount: 4 },
-      { id: "oh-s15", title: { en: "15. Salivary glands & Tonsils", ar: "15. الغدد اللعابية ولوزات الفم" }, topicsCount: 4 }
+      { id: "oh-s6", title: { en: "6. Dentin", ar: "6. العاج" }, topicsCount: 0 },
+      { id: "oh-s7", title: { en: "7. Cementum", ar: "7. الملاط" }, topicsCount: 0 },
+      { id: "oh-s8", title: { en: "8. Dental pulp", ar: "8. لب السن" }, topicsCount: 0 },
+      { id: "oh-s9", title: { en: "9. Periodontal ligament (PDL)", ar: "9. الرباط السنخي السني" }, topicsCount: 0 },
+      { id: "oh-s10", title: { en: "10. Alveolar bone", ar: "10. العظم السنخي" }, topicsCount: 0 },
+      { id: "oh-s11", title: { en: "11. Maxillary sinus", ar: "11. الجيب الفكي العلوي" }, topicsCount: 0 },
+      { id: "oh-s12", title: { en: "12. Eruption and shedding", ar: "12. البزوغ والتبديل" }, topicsCount: 0 },
+      { id: "oh-s13", title: { en: "13. Temporomandibular joint (TMJ)", ar: "13. المفصل الصدغي الفكي" }, topicsCount: 0 },
+      { id: "oh-s14", title: { en: "14. Oral mucosa & Gingiva", ar: "14. المخاطية الفموية واللثة" }, topicsCount: 0 },
+      { id: "oh-s15", title: { en: "15. Salivary glands & Tonsils", ar: "15. الغدد اللعابية ولوزات الفم" }, topicsCount: 0 }
     ]
   },
   {
@@ -1485,20 +1938,20 @@ window.DENTAL_SUBJECTS = [
       ar: "مبادئ تحضير الأسنان، تيجان الخزف والترميمات الكاملة، طبعات الفم، نماذج الشمع والصب."
     },
     sheets: [
-      { id: "cr-s1", title: { en: "1. Introduction", ar: "1. مقدمة" }, topicsCount: 2 },
-      { id: "cr-s2", title: { en: "2. Instruments", ar: "2. الأدوات والأجهزة" }, topicsCount: 3 },
-      { id: "cr-s3", title: { en: "3. Principles of tooth preparation", ar: "3. مبادئ تحضير الأسنان" }, topicsCount: 5 },
-      { id: "cr-s4", title: { en: "4. Metal ceramic", ar: "4. الخزف المنصهر على معدن" }, topicsCount: 4 },
-      { id: "cr-s5", title: { en: "5. Full coverage", ar: "5. التغطية الكاملة" }, topicsCount: 3 },
-      { id: "cr-s6", title: { en: "6. Fluid control", ar: "6. السيطرة على السوائل" }, topicsCount: 2 },
-      { id: "cr-s7", title: { en: "7. Impression material", ar: "7. مواد الطبعات" }, topicsCount: 4 },
-      { id: "cr-s8", title: { en: "8. Working cast and die", ar: "8. المثال العملي والمقاطع" }, topicsCount: 3 },
-      { id: "cr-s9", title: { en: "9. Wax pattern", ar: "9. النموذج الشمعي" }, topicsCount: 3 },
-      { id: "cr-s10", title: { en: "10. Spruing & investing", ar: "10. المصبات والأكساء" }, topicsCount: 3 },
-      { id: "cr-s11", title: { en: "11. Casting", ar: "11. عملية الصب" }, topicsCount: 3 },
-      { id: "cr-s12", title: { en: "12. Pontic", ar: "12. الدمية الثابتة" }, topicsCount: 3 },
-      { id: "cr-s13", title: { en: "13. Retainer", ar: "13. المثبت السني" }, topicsCount: 3 },
-      { id: "cr-s14", title: { en: "14. Connector", ar: "14. الوصلات" }, topicsCount: 2 }
+      { id: "cr-s1", title: { en: "1. Introduction", ar: "1. مقدمة" }, topicsCount: 0 },
+      { id: "cr-s2", title: { en: "2. Instruments", ar: "2. الأدوات والأجهزة" }, topicsCount: 0 },
+      { id: "cr-s3", title: { en: "3. Principles of tooth preparation", ar: "3. مبادئ تحضير الأسنان" }, topicsCount: 0 },
+      { id: "cr-s4", title: { en: "4. Metal ceramic", ar: "4. الخزف المنصهر على معدن" }, topicsCount: 0 },
+      { id: "cr-s5", title: { en: "5. Full coverage", ar: "5. التغطية الكاملة" }, topicsCount: 0 },
+      { id: "cr-s6", title: { en: "6. Fluid control", ar: "6. السيطرة على السوائل" }, topicsCount: 0 },
+      { id: "cr-s7", title: { en: "7. Impression material", ar: "7. مواد الطبعات" }, topicsCount: 0 },
+      { id: "cr-s8", title: { en: "8. Working cast and die", ar: "8. المثال العملي والمقاطع" }, topicsCount: 0 },
+      { id: "cr-s9", title: { en: "9. Wax pattern", ar: "9. النموذج الشمعي" }, topicsCount: 0 },
+      { id: "cr-s10", title: { en: "10. Spruing & investing", ar: "10. المصبات والأكساء" }, topicsCount: 0 },
+      { id: "cr-s11", title: { en: "11. Casting", ar: "11. عملية الصب" }, topicsCount: 0 },
+      { id: "cr-s12", title: { en: "12. Pontic", ar: "12. الدمية الثابتة" }, topicsCount: 0 },
+      { id: "cr-s13", title: { en: "13. Retainer", ar: "13. المثبت السني" }, topicsCount: 0 },
+      { id: "cr-s14", title: { en: "14. Connector", ar: "14. الوصلات" }, topicsCount: 0 }
     ]
   },
   {
@@ -1514,11 +1967,11 @@ window.DENTAL_SUBJECTS = [
       ar: "المعالم التشريحية، طبعات الفم، كتل الإطباق، قوس الوجه، تخطيط الطقوم الجزئية والوصلات."
     },
     sheets: [
-      { id: "pros-s1", title: { en: "1. Introduction", ar: "1. مقدمة" }, topicsCount: 2 },
+      { id: "pros-s1", title: { en: "1. Introduction", ar: "1. مقدمة" }, topicsCount: 0 },
       {
         id: "pros-s2",
         title: { en: "2. Anatomical landmarks", ar: "2. المعالم التشريحية" },
-        topicsCount: 5,
+        topicsCount: 1,
         quizzes: [
           {
             id: "q-pros-1",
@@ -1543,24 +1996,24 @@ window.DENTAL_SUBJECTS = [
           }
         ]
       },
-      { id: "pros-s3", title: { en: "3. Impression", ar: "3. الطبعات" }, topicsCount: 4 },
-      { id: "pros-s4", title: { en: "4. Relief", ar: "4. الإغاثة والراحة" }, topicsCount: 2 },
-      { id: "pros-s5", title: { en: "5. Occlusion blocks", ar: "5. كتل الإطباق" }, topicsCount: 3 },
-      { id: "pros-s6", title: { en: "6. Mandibular movement", ar: "6. حركة الفك السفلي" }, topicsCount: 4 },
-      { id: "pros-s7", title: { en: "7. Facebow", ar: "7. قوس الوجه" }, topicsCount: 3 },
-      { id: "pros-s8", title: { en: "8. Selection of teeth", ar: "8. اختيار الأسنان" }, topicsCount: 3 },
-      { id: "pros-s9", title: { en: "9. Arrangement", ar: "9. نضد الأسنان" }, topicsCount: 4 },
-      { id: "pros-s10", title: { en: "10. Retention", ar: "10. التثبيت والاستقرار" }, topicsCount: 3 },
-      { id: "pros-s11", title: { en: "11. Processing of complete denture", ar: "11. معالجة الطقم الكامل" }, topicsCount: 4 },
-      { id: "pros-s12", title: { en: "12. Repair, relining and rebasing of complete denture", ar: "12. إصلاح وإبطان وتبديل قاعدة الطقم" }, topicsCount: 4 },
-      { id: "pros-s13", title: { en: "13. Removable partial prosthodontics", ar: "13. الاستعاضة الجزئية المتحركة" }, topicsCount: 5 },
-      { id: "pros-s14", title: { en: "14. RPD component Rest", ar: "14. مهاميز الاستعاضة الجزئية" }, topicsCount: 3 },
-      { id: "pros-s15", title: { en: "15. Dental surveyor & surveying", ar: "15. المخطط السني والتخطيط" }, topicsCount: 4 },
-      { id: "pros-s16", title: { en: "16. Direct and indirect retainer", ar: "16. المثبتات المباشرة وغير المباشرة" }, topicsCount: 4 },
-      { id: "pros-s17", title: { en: "17. Major and minor connector", ar: "17. الوصلات الكبرى والصغرى" }, topicsCount: 4 },
-      { id: "pros-s18", title: { en: "18. Denture base", ar: "18. قاعدة الطقم" }, topicsCount: 3 },
-      { id: "pros-s19", title: { en: "19. Laboratory Procedures", ar: "19. الإجراءات المختبرية" }, topicsCount: 5 },
-      { id: "pros-s20", title: { en: "20. Biomechanics of Removable Partial Denture", ar: "20. الميكانيكا الحيوية للطقوم الجزئية" }, topicsCount: 4 }
+      { id: "pros-s3", title: { en: "3. Impression", ar: "3. الطبعات" }, topicsCount: 0 },
+      { id: "pros-s4", title: { en: "4. Relief", ar: "4. الإغاثة والراحة" }, topicsCount: 0 },
+      { id: "pros-s5", title: { en: "5. Occlusion blocks", ar: "5. كتل الإطباق" }, topicsCount: 0 },
+      { id: "pros-s6", title: { en: "6. Mandibular movement", ar: "6. حركة الفك السفلي" }, topicsCount: 0 },
+      { id: "pros-s7", title: { en: "7. Facebow", ar: "7. قوس الوجه" }, topicsCount: 0 },
+      { id: "pros-s8", title: { en: "8. Selection of teeth", ar: "8. اختيار الأسنان" }, topicsCount: 0 },
+      { id: "pros-s9", title: { en: "9. Arrangement", ar: "9. نضد الأسنان" }, topicsCount: 0 },
+      { id: "pros-s10", title: { en: "10. Retention", ar: "10. التثبيت والاستقرار" }, topicsCount: 0 },
+      { id: "pros-s11", title: { en: "11. Processing of complete denture", ar: "11. معالجة الطقم الكامل" }, topicsCount: 0 },
+      { id: "pros-s12", title: { en: "12. Repair, relining and rebasing of complete denture", ar: "12. إصلاح وإبطان وتبديل قاعدة الطقم" }, topicsCount: 0 },
+      { id: "pros-s13", title: { en: "13. Removable partial prosthodontics", ar: "13. الاستعاضة الجزئية المتحركة" }, topicsCount: 0 },
+      { id: "pros-s14", title: { en: "14. RPD component Rest", ar: "14. مهاميز الاستعاضة الجزئية" }, topicsCount: 0 },
+      { id: "pros-s15", title: { en: "15. Dental surveyor & surveying", ar: "15. المخطط السني والتخطيط" }, topicsCount: 0 },
+      { id: "pros-s16", title: { en: "16. Direct and indirect retainer", ar: "16. المثبتات المباشرة وغير المباشرة" }, topicsCount: 0 },
+      { id: "pros-s17", title: { en: "17. Major and minor connector", ar: "17. الوصلات الكبرى والصغرى" }, topicsCount: 0 },
+      { id: "pros-s18", title: { en: "18. Denture base", ar: "18. قاعدة الطقم" }, topicsCount: 0 },
+      { id: "pros-s19", title: { en: "19. Laboratory Procedures", ar: "19. الإجراءات المختبرية" }, topicsCount: 0 },
+      { id: "pros-s20", title: { en: "20. Biomechanics of Removable Partial Denture", ar: "20. الميكانيكا الحيوية للطقوم الجزئية" }, topicsCount: 0 }
     ]
   },
   {
@@ -1576,11 +2029,11 @@ window.DENTAL_SUBJECTS = [
       ar: "الجهاز العصبي الودائي، المخدرات المحلية، المضادات الحيوية، والمسكنات الأفيونية."
     },
     sheets: [
-      { id: "ph-s1", title: { en: "1. Introduction", ar: "1. مقدمة" }, topicsCount: 2 },
+      { id: "ph-s1", title: { en: "1. Introduction", ar: "1. مقدمة" }, topicsCount: 0 },
       {
         id: "ph-s2",
         title: { en: "2. Autonomic nervous system", ar: "2. الجهاز العصبي الذاتي" },
-        topicsCount: 4,
+        topicsCount: 1,
         quizzes: [
           {
             id: "q-pharm-1",
@@ -1605,8 +2058,8 @@ window.DENTAL_SUBJECTS = [
           }
         ]
       },
-      { id: "ph-s3", title: { en: "3. Antimicrobial agents", ar: "3. العوامل المضادة للميكروبات" }, topicsCount: 4 },
-      { id: "ph-s4", title: { en: "4. Opioid analgesics", ar: "4. المسكنات الأفيونية" }, topicsCount: 3 }
+      { id: "ph-s3", title: { en: "3. Antimicrobial agents", ar: "3. العوامل المضادة للميكروبات" }, topicsCount: 0 },
+      { id: "ph-s4", title: { en: "4. Opioid analgesics", ar: "4. المسكنات الأفيونية" }, topicsCount: 0 }
     ]
   },
   {
@@ -1622,17 +2075,17 @@ window.DENTAL_SUBJECTS = [
       ar: "أذية الخلايا، الالتهاب، ترميم الأنسجة، الأورام، والظواهر الفموية للأمراض الجهازية."
     },
     sheets: [
-      { id: "pa-s1", title: { en: "1. Introduction", ar: "1. مقدمة" }, topicsCount: 2 },
-      { id: "pa-s2", title: { en: "2. Adaptation", ar: "2. التكيف الخلوي" }, topicsCount: 3 },
-      { id: "pa-s3", title: { en: "3. Cell injury", ar: "3. أذية الخلايا" }, topicsCount: 4 },
-      { id: "pa-s4", title: { en: "4. Inflammation", ar: "4. الالتهاب" }, topicsCount: 5 },
-      { id: "pa-s5", title: { en: "5. Tissue repair", ar: "5. ترميم الأنسجة" }, topicsCount: 3 },
-      { id: "pa-s6", title: { en: "6. Circulatory disorders", ar: "6. اضطرابات الدوران" }, topicsCount: 4 },
-      { id: "pa-s7", title: { en: "7. Neoplasia", ar: "7. التنسجات والأورام" }, topicsCount: 5 },
-      { id: "pa-s8", title: { en: "8. Cardiovascular pathology", ar: "8. أمراض الجهاز الوعائي القلبي" }, topicsCount: 4 },
-      { id: "pa-s9", title: { en: "9. Gastrointestinal pathology", ar: "9. أمراض الجهاز الهضمي" }, topicsCount: 4 },
-      { id: "pa-s10", title: { en: "10. Granuloma", ar: "10. الورم الحبيبي" }, topicsCount: 3 },
-      { id: "pa-s11", title: { en: "11. Oral manifestations of systemic disease", ar: "11. الظواهر الفموية للأمراض الجهازية" }, topicsCount: 5 }
+      { id: "pa-s1", title: { en: "1. Introduction", ar: "1. مقدمة" }, topicsCount: 0 },
+      { id: "pa-s2", title: { en: "2. Adaptation", ar: "2. التكيف الخلوي" }, topicsCount: 0 },
+      { id: "pa-s3", title: { en: "3. Cell injury", ar: "3. أذية الخلايا" }, topicsCount: 0 },
+      { id: "pa-s4", title: { en: "4. Inflammation", ar: "4. الالتهاب" }, topicsCount: 0 },
+      { id: "pa-s5", title: { en: "5. Tissue repair", ar: "5. ترميم الأنسجة" }, topicsCount: 0 },
+      { id: "pa-s6", title: { en: "6. Circulatory disorders", ar: "6. اضطرابات الدوران" }, topicsCount: 0 },
+      { id: "pa-s7", title: { en: "7. Neoplasia", ar: "7. التنسجات والأورام" }, topicsCount: 0 },
+      { id: "pa-s8", title: { en: "8. Cardiovascular pathology", ar: "8. أمراض الجهاز الوعائي القلبي" }, topicsCount: 0 },
+      { id: "pa-s9", title: { en: "9. Gastrointestinal pathology", ar: "9. أمراض الجهاز الهضمي" }, topicsCount: 0 },
+      { id: "pa-s10", title: { en: "10. Granuloma", ar: "10. الورم الحبيبي" }, topicsCount: 0 },
+      { id: "pa-s11", title: { en: "11. Oral manifestations of systemic disease", ar: "11. الظواهر الفموية للأمراض الجهازية" }, topicsCount: 0 }
     ]
   },
   {
@@ -1648,13 +2101,13 @@ window.DENTAL_SUBJECTS = [
       ar: "البكتيريا، الإمراضية، المناعة، التعقيم والتطهير، وعلم الفيروسات."
     },
     sheets: [
-      { id: "mic-s1", title: { en: "1. Introduction", ar: "1. مقدمة" }, topicsCount: 2 },
-      { id: "mic-s2", title: { en: "2. Bacteriology", ar: "2. علم البكتيريا" }, topicsCount: 4 },
-      { id: "mic-s3", title: { en: "3. Bacterial taxonomy", ar: "3. تصنيف البكتيريا" }, topicsCount: 3 },
+      { id: "mic-s1", title: { en: "1. Introduction", ar: "1. مقدمة" }, topicsCount: 0 },
+      { id: "mic-s2", title: { en: "2. Bacteriology", ar: "2. علم البكتيريا" }, topicsCount: 0 },
+      { id: "mic-s3", title: { en: "3. Bacterial taxonomy", ar: "3. تصنيف البكتيريا" }, topicsCount: 0 },
       {
         id: "mic-s4",
         title: { en: "4. Bacterial pathogenicity", ar: "4. الإمراضية البكتيرية" },
-        topicsCount: 4,
+        topicsCount: 1,
         quizzes: [
           {
             id: "q-mic-1",
@@ -1679,14 +2132,14 @@ window.DENTAL_SUBJECTS = [
           }
         ]
       },
-      { id: "mic-s5", title: { en: "5. Antimicrobial chemotherapy", ar: "5. العلاج الكيميائي المضاد للميكروبات" }, topicsCount: 3 },
-      { id: "mic-s6", title: { en: "6. Clinically important bacteria", ar: "6. البكتيريا الهامة سريرياً" }, topicsCount: 4 },
-      { id: "mic-s7", title: { en: "7. Immunology", ar: "7. علم المناعة" }, topicsCount: 4 },
-      { id: "mic-s8", title: { en: "8. Complement system", ar: "8. نظام المتممة" }, topicsCount: 3 },
-      { id: "mic-s9", title: { en: "9. Mycology", ar: "9. علم الفطريات" }, topicsCount: 3 },
-      { id: "mic-s10", title: { en: "10. Sterilization and disinfection", ar: "10. التعقيم والتطهير" }, topicsCount: 4 },
-      { id: "mic-s11", title: { en: "11. Bacterial genetics", ar: "11. وراثة البكتيريا" }, topicsCount: 3 },
-      { id: "mic-s12", title: { en: "12. Virology", ar: "12. علم الفيروسات" }, topicsCount: 4 }
+      { id: "mic-s5", title: { en: "5. Antimicrobial chemotherapy", ar: "5. العلاج الكيميائي المضاد للميكروبات" }, topicsCount: 0 },
+      { id: "mic-s6", title: { en: "6. Clinically important bacteria", ar: "6. البكتيريا الهامة سريرياً" }, topicsCount: 0 },
+      { id: "mic-s7", title: { en: "7. Immunology", ar: "7. علم المناعة" }, topicsCount: 0 },
+      { id: "mic-s8", title: { en: "8. Complement system", ar: "8. نظام المتممة" }, topicsCount: 0 },
+      { id: "mic-s9", title: { en: "9. Mycology", ar: "9. علم الفطريات" }, topicsCount: 0 },
+      { id: "mic-s10", title: { en: "10. Sterilization and disinfection", ar: "10. التعقيم والتطهير" }, topicsCount: 0 },
+      { id: "mic-s11", title: { en: "11. Bacterial genetics", ar: "11. وراثة البكتيريا" }, topicsCount: 0 },
+      { id: "mic-s12", title: { en: "12. Virology", ar: "12. علم الفيروسات" }, topicsCount: 0 }
     ]
   },
   {
@@ -1702,18 +2155,18 @@ window.DENTAL_SUBJECTS = [
       ar: "نسج الأسنان، تحضير حفر الصنف الأول والثاني، الأملغم، الكومبوزيت، وحماية اللب."
     },
     sheets: [
-      { id: "cons-s1", title: { en: "1. Introduction", ar: "1. مقدمة" }, topicsCount: 2 },
-      { id: "cons-s2", title: { en: "2. Tooth histology", ar: "2. نسج الأسنان" }, topicsCount: 3 },
-      { id: "cons-s3", title: { en: "3. Instruments", ar: "3. الأدوات السنية" }, topicsCount: 3 },
-      { id: "cons-s4", title: { en: "4. Dental caries Part 1 and Part 2", ar: "4. تسوس الأسنان الجزء 1 و 2" }, topicsCount: 5 },
-      { id: "cons-s5", title: { en: "5. Principles", ar: "5. مبادئ التحضير" }, topicsCount: 3 },
-      { id: "cons-s6", title: { en: "6. Amalgam", ar: "6. حشوة الأملغم" }, topicsCount: 4 },
-      { id: "cons-s7", title: { en: "7. Class I & II cavity preparation for amalgam restoration", ar: "7. تحضير حفر الصنف الأول والثاني للأملغم" }, topicsCount: 5 },
-      { id: "cons-s8", title: { en: "8. Glass ionomer cement (GIC)", ar: "8. إسمنت زجاجي يوندوميري" }, topicsCount: 4 },
-      { id: "cons-s9", title: { en: "9. Matrices and wedges", ar: "9. المساند والإسفينات" }, topicsCount: 3 },
-      { id: "cons-s10", title: { en: "10. Composite resin restoration", ar: "10. ترميمات الكومبوزيت اللاصقة" }, topicsCount: 4 },
-      { id: "cons-s11", title: { en: "11. Pulp protection", ar: "11. حماية لب السن" }, topicsCount: 3 },
-      { id: "cons-s12", title: { en: "12. Non-carious lesions", ar: "12. الآفات غير التسوسية" }, topicsCount: 3 }
+      { id: "cons-s1", title: { en: "1. Introduction", ar: "1. مقدمة" }, topicsCount: 0 },
+      { id: "cons-s2", title: { en: "2. Tooth histology", ar: "2. نسج الأسنان" }, topicsCount: 0 },
+      { id: "cons-s3", title: { en: "3. Instruments", ar: "3. الأدوات السنية" }, topicsCount: 0 },
+      { id: "cons-s4", title: { en: "4. Dental caries Part 1 and Part 2", ar: "4. تسوس الأسنان الجزء 1 و 2" }, topicsCount: 0 },
+      { id: "cons-s5", title: { en: "5. Principles", ar: "5. مبادئ التحضير" }, topicsCount: 0 },
+      { id: "cons-s6", title: { en: "6. Amalgam", ar: "6. حشوة الأملغم" }, topicsCount: 0 },
+      { id: "cons-s7", title: { en: "7. Class I & II cavity preparation for amalgam restoration", ar: "7. تحضير حفر الصنف الأول والثاني للأملغم" }, topicsCount: 0 },
+      { id: "cons-s8", title: { en: "8. Glass ionomer cement (GIC)", ar: "8. إسمنت زجاجي يوندوميري" }, topicsCount: 0 },
+      { id: "cons-s9", title: { en: "9. Matrices and wedges", ar: "9. المساند والإسفينات" }, topicsCount: 0 },
+      { id: "cons-s10", title: { en: "10. Composite resin restoration", ar: "10. ترميمات الكومبوزيت اللاصقة" }, topicsCount: 0 },
+      { id: "cons-s11", title: { en: "11. Pulp protection", ar: "11. حماية لب السن" }, topicsCount: 0 },
+      { id: "cons-s12", title: { en: "12. Non-carious lesions", ar: "12. الآفات غير التسوسية" }, topicsCount: 0 }
     ]
   }
 ];
@@ -1743,7 +2196,7 @@ window.DENTISTOIRE_INITIAL_USER = {
 
 /**
  * DENTISTOIRE - Official Application Engine
- * Permanent Role-Based Access Control (RBAC) & Admin Route Guard Engine
+ * Strict Real-Text Question Parser & Pure Honest Curriculum State
  */
 
 (function () {
@@ -1779,13 +2232,17 @@ window.DENTISTOIRE_INITIAL_USER = {
     "Outstanding accuracy! Keep moving forward."
   ];
 
-  // Default Student Data with Strict RBAC Permissions
-  const state = JSON.parse(localStorage.getItem('dentistoire_app_state_v14')) || {
+  // Default Clean Student Data v27 (Immediate sync for 16 Development of the Face questions on public link)
+  const state = JSON.parse(localStorage.getItem('dentistoire_app_state_v27')) || {
     theme: "dream-blush",
     language: "en",
-    user: window.DENTISTOIRE_INITIAL_USER || { name: "Guest Student", role: "STUDENT" },
+    user: null,
+    registeredStudents: [
+      { name: "Sarah Al-Sayed", email: "sarah@dentistoire.edu", password: "password123", role: "STUDENT", year: "2nd Year", joined: "2026-08-01", status: "Active", xp: 120 }
+    ],
     savedQuizzes: [],
     weakQuestions: [],
+    customQuizzes: [],
     history: [],
     streak: 0,
     xp: 0,
@@ -1799,7 +2256,7 @@ window.DENTISTOIRE_INITIAL_USER = {
   };
 
   function saveState() {
-    localStorage.setItem('dentistoire_app_state_v14', JSON.stringify(state));
+    localStorage.setItem('dentistoire_app_state_v27', JSON.stringify(state));
   }
 
   function showToast(message) {
@@ -1818,25 +2275,230 @@ window.DENTISTOIRE_INITIAL_USER = {
     }, 3200);
   }
 
-  // Role-Based UI Guard Enforcer
+  // Restore Custom Questions from LocalStorage & Ensure Built-In Quizzes are Preserved
+  function mergeCustomQuizzes() {
+    const subjects = window.DENTAL_SUBJECTS || [];
+    subjects.forEach(sbj => {
+      (sbj.sheets || []).forEach(sheet => {
+        if (sheet.quizzes && sheet.quizzes.length > 0) {
+          sheet.topicsCount = sheet.quizzes.length;
+        }
+      });
+    });
+
+    if (!state.customQuizzes || state.customQuizzes.length === 0) return;
+
+    state.customQuizzes.forEach(cq => {
+      const sbj = subjects.find(s => s.id === cq.subjectId);
+      if (sbj && sbj.sheets) {
+        const sheet = sbj.sheets.find(sh => sh.id === cq.sheetId);
+        if (sheet) {
+          if (!sheet.quizzes) sheet.quizzes = [];
+          cq.questions.forEach(q => {
+            const exists = sheet.quizzes.some(existing => existing.question.en === q.question.en);
+            if (!exists) sheet.quizzes.push(q);
+          });
+          sheet.topicsCount = sheet.quizzes.length;
+        }
+      }
+    });
+  }
+
+  // Role-Based UI Guard Enforcer & Session Header Update
   function updateRoleBasedUI() {
-    const isAdmin = state.user && state.user.role === 'ADMIN';
-    
-    // Toggle Admin Nav Link Visibility
+    const user = state.user;
+    const isAdmin = user && user.role === 'ADMIN';
+    const isLoggedIn = !!user;
+
     const adminNavBtn = document.querySelector('.nav-link-btn[data-target="view-admin-hub"]');
     if (adminNavBtn) {
       adminNavBtn.style.display = isAdmin ? 'inline-flex' : 'none';
     }
 
-    const authNavLabel = document.getElementById('auth-nav-label');
-    if (authNavLabel) {
-      authNavLabel.textContent = isAdmin ? 'Admin' : 'Sign In';
+    const authBtn = document.getElementById('btn-auth-trigger');
+    const userBadge = document.getElementById('user-session-badge');
+    const userNameEl = document.getElementById('nav-user-display-name');
+
+    if (isLoggedIn) {
+      if (authBtn) authBtn.style.display = 'none';
+      if (userBadge) userBadge.style.display = 'inline-flex';
+      if (userNameEl) userNameEl.textContent = `👤 ${user.name}`;
+    } else {
+      if (authBtn) authBtn.style.display = 'inline-flex';
+      if (userBadge) userBadge.style.display = 'none';
     }
 
+    const profileName = document.getElementById('profile-user-name');
     const profileRole = document.getElementById('profile-user-role');
-    if (profileRole) {
-      profileRole.textContent = isAdmin ? 'Administrator & Lead Faculty' : 'Dental Student';
+    const profileAvatar = document.getElementById('profile-user-avatar');
+
+    if (profileName) profileName.textContent = user ? user.name : "Guest Student";
+    if (profileRole) profileRole.textContent = isAdmin ? "Administrator & Lead Faculty" : (user ? `Dental Student • ${user.year || 'Scholar'}` : "Guest Scholar");
+    if (profileAvatar) {
+      const name = user ? user.name : "Guest Student";
+      const initials = name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+      profileAvatar.textContent = initials;
     }
+  }
+
+  // Dual-Tab Authentication System
+  function switchAuthTab(tabName) {
+    const loginTab = document.getElementById('auth-tab-login');
+    const signupTab = document.getElementById('auth-tab-signup');
+    const loginForm = document.getElementById('auth-form-login');
+    const signupForm = document.getElementById('auth-form-signup');
+
+    if (tabName === 'login') {
+      if (loginTab) { loginTab.style.color = 'var(--primary)'; loginTab.style.borderBottom = '2px solid var(--primary)'; loginTab.style.fontWeight = '700'; }
+      if (signupTab) { signupTab.style.color = 'var(--text-muted)'; signupTab.style.borderBottom = 'none'; signupTab.style.fontWeight = '400'; }
+      if (loginForm) loginForm.style.display = 'block';
+      if (signupForm) signupForm.style.display = 'none';
+    } else {
+      if (signupTab) { signupTab.style.color = 'var(--primary)'; signupTab.style.borderBottom = '2px solid var(--primary)'; signupTab.style.fontWeight = '700'; }
+      if (loginTab) { loginTab.style.color = 'var(--text-muted)'; loginTab.style.borderBottom = 'none'; loginTab.style.fontWeight = '400'; }
+      if (signupForm) signupForm.style.display = 'block';
+      if (loginForm) loginForm.style.display = 'none';
+    }
+  }
+
+  function openAuthModal() {
+    switchAuthTab('login');
+    document.getElementById('auth-modal').style.display = 'flex';
+  }
+
+  function closeAuthModal() {
+    document.getElementById('auth-modal').style.display = 'none';
+  }
+
+  function performLogin() {
+    const email = document.getElementById('auth-login-email').value.trim().toLowerCase();
+    const password = document.getElementById('auth-login-password').value.trim();
+
+    if (!email) {
+      showToast("Please enter your email address.");
+      return;
+    }
+
+    const isAdminAccount = email === "admin@dentistoire.edu" || email.includes("admin");
+
+    if (isAdminAccount) {
+      state.user = {
+        name: "Dr. Hadeel Zadin",
+        email: email,
+        role: "ADMIN",
+        year: "Faculty Director",
+        xp: state.xp || 500
+      };
+      saveState();
+      updateRoleBasedUI();
+      showToast("🔑 Welcome back, Dr. Hadeel! Administrator privileges unlocked.");
+      closeAuthModal();
+      return;
+    }
+
+    const existingStudent = (state.registeredStudents || []).find(s => s.email.toLowerCase() === email);
+
+    if (existingStudent) {
+      if (password && existingStudent.password && existingStudent.password !== password) {
+        showToast("Incorrect password. Please try again.");
+        return;
+      }
+      state.user = existingStudent;
+      saveState();
+      updateRoleBasedUI();
+      showToast(`👋 Welcome back, ${existingStudent.name}! You are logged in.`);
+      closeAuthModal();
+    } else {
+      const newStudent = {
+        name: email.split('@')[0].replace('.', ' '),
+        email: email,
+        password: password || "password123",
+        role: "STUDENT",
+        year: "2nd Year",
+        joined: new Date().toISOString().split('T')[0],
+        status: "Active",
+        xp: 0
+      };
+      state.registeredStudents.push(newStudent);
+      state.user = newStudent;
+      saveState();
+      updateRoleBasedUI();
+      renderAdminUsersTable();
+      showToast(`🎉 Logged in as ${newStudent.name}! Account registered.`);
+      closeAuthModal();
+    }
+  }
+
+  function performSignup() {
+    const name = document.getElementById('auth-signup-name').value.trim();
+    const email = document.getElementById('auth-signup-email').value.trim().toLowerCase();
+    const password = document.getElementById('auth-signup-password').value.trim();
+    const year = document.getElementById('auth-signup-year').value;
+
+    if (!name || !email || !password) {
+      showToast("Please fill in all required fields.");
+      return;
+    }
+
+    const existingIdx = (state.registeredStudents || []).findIndex(s => s.email.toLowerCase() === email);
+    if (existingIdx !== -1) {
+      showToast("An account with this email already exists! Switching to Log In...");
+      switchAuthTab('login');
+      document.getElementById('auth-login-email').value = email;
+      return;
+    }
+
+    const newStudent = {
+      name: name,
+      email: email,
+      password: password,
+      role: "STUDENT",
+      year: year,
+      joined: new Date().toISOString().split('T')[0],
+      status: "Active",
+      xp: 0
+    };
+
+    state.registeredStudents.push(newStudent);
+    state.user = newStudent;
+    saveState();
+
+    updateRoleBasedUI();
+    renderAdminUsersTable();
+    showToast(`🎉 Welcome to DENTISTOIRE, ${name}! Your student account is active.`);
+    closeAuthModal();
+  }
+
+  function performLogout() {
+    state.user = null;
+    saveState();
+    updateRoleBasedUI();
+    showToast("Logged out successfully.");
+    navigateTo('view-home');
+  }
+
+  function renderAdminUsersTable() {
+    const tbody = document.getElementById('admin-users-table-body');
+    if (!tbody) return;
+
+    const initialUsers = window.DENTISTOIRE_REGISTERED_USERS || [];
+    const registered = state.registeredStudents || [];
+
+    const allUsersMap = new Map();
+    initialUsers.forEach(u => allUsersMap.set(u.email.toLowerCase(), u));
+    registered.forEach(u => allUsersMap.set(u.email.toLowerCase(), u));
+
+    const combinedList = Array.from(allUsersMap.values());
+
+    tbody.innerHTML = combinedList.map(u => `
+      <tr style="border-bottom: 1px solid var(--card-border);">
+        <td style="padding: 0.75rem; font-weight: 600;">${u.name}</td>
+        <td style="padding: 0.75rem; color: var(--text-secondary);">${u.email}</td>
+        <td style="padding: 0.75rem;"><span class="btn-luxury" style="padding: 0.15rem 0.5rem; font-size: 0.7rem;">${u.role || 'STUDENT'}</span></td>
+        <td style="padding: 0.75rem; color: var(--text-muted);">${u.joined || '2026-08-01'}</td>
+        <td style="padding: 0.75rem; color: #10b981; font-weight: 600;">${u.status || 'Active'}</td>
+      </tr>
+    `).join('');
   }
 
   // Theme Switcher - Instant Swap & Persistence
@@ -1899,12 +2561,11 @@ window.DENTISTOIRE_INITIAL_USER = {
 
   // Router & Security Route Guard
   function navigateTo(viewId) {
-    // Admin Security Route Guard
     if (viewId === 'view-admin-hub') {
       const isAdmin = state.user && state.user.role === 'ADMIN';
       if (!isAdmin) {
         showToast("⛔ Access Denied: Administrative privileges required.");
-        return; // Block navigation completely for non-admin students!
+        return;
       }
     }
 
@@ -2406,7 +3067,7 @@ window.DENTISTOIRE_INITIAL_USER = {
     }).join('');
   }
 
-  // 3-LEVEL LEARNING HIERARCHY: Level 2 -> Sheet List
+  // 3-LEVEL LEARNING HIERARCHY: Level 2 -> Sheet List with Clean Elegant Card Design
   let activeSelectedSubject = null;
 
   function selectSubject(subjectId) {
@@ -2428,20 +3089,25 @@ window.DENTISTOIRE_INITIAL_USER = {
         </div>
       `;
     } else {
-      container.innerHTML = sheets.map(sheet => `
-        <div class="glass-widget-card" style="display: flex; flex-direction: column; justify-content: space-between;">
-          <div>
-            <div style="display: flex; justify-content: space-between; margin-bottom: 0.75rem;">
-              <span class="btn-luxury" style="padding: 0.2rem 0.6rem; font-size: 0.75rem;">Official Sheet</span>
-              <span style="color: var(--text-muted); font-size: 0.8rem;"><i class="fa-solid fa-layer-group"></i> ${sheet.topicsCount || 3} Topics</span>
+      container.innerHTML = sheets.map(sheet => {
+        const qCount = sheet.quizzes ? sheet.quizzes.length : 0;
+        return `
+          <div class="glass-widget-card" style="display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                <span class="btn-luxury" style="padding: 0.2rem 0.65rem; font-size: 0.75rem; background: var(--card-bg); color: var(--text-primary); border: 1px solid var(--card-border); box-shadow: none;">Official Sheet</span>
+                <span style="color: var(--text-secondary); font-size: 0.82rem; font-weight: 600;">
+                  <i class="fa-solid fa-book-open" style="color: var(--text-muted);"></i> ${qCount} ${qCount === 1 ? 'Question' : 'Questions'}
+                </span>
+              </div>
+              <h3 style="font-family: 'Playfair Display', serif; font-size: 1.15rem; margin-bottom: 0.5rem;">${sheet.title[state.language]}</h3>
             </div>
-            <h3 style="font-family: 'Playfair Display', serif; font-size: 1.15rem; margin-bottom: 0.5rem;">${sheet.title[state.language]}</h3>
+            <button class="btn-luxury" style="margin-top: 1.5rem; width: 100%; justify-content: center; padding: 0.65rem; ${qCount === 0 ? 'opacity: 0.4; cursor: not-allowed;' : ''}" onclick="window.DentistoireApp.startSheetQuestions('${sheet.id}')" ${qCount === 0 ? 'disabled' : ''}>
+              <i class="fa-solid fa-play"></i> ${qCount > 0 ? 'Start Quiz' : 'Prepared for Questions'}
+            </button>
           </div>
-          <button class="btn-luxury" style="margin-top: 1.5rem; width: 100%; justify-content: center;" onclick="window.DentistoireApp.startSheetQuestions('${sheet.id}')">
-            Start Learning Content &rarr;
-          </button>
-        </div>
-      `).join('');
+        `;
+      }).join('');
     }
 
     navigateTo('view-sheet-list');
@@ -2838,51 +3504,248 @@ window.DENTISTOIRE_INITIAL_USER = {
     updateSheets();
   }
 
-  function confirmImportPDFQuestions() {
-    showToast("📄 4 Extracted PDF questions successfully imported into selected sheet!");
-    document.getElementById('pdf-parsed-preview').style.display = 'none';
+  // PDF.js Real Binary PDF Extraction & Deduplication Engine
+  let pendingParsedQuestions = [];
+  let lastImportTarget = null;
+  let activeProcessingFilename = "";
+
+  function setPDFImportUIState(stateType, titleMsg = "", descMsg = "") {
+    const loadingState = document.getElementById('pdf-import-loading-state');
+    const errorCard = document.getElementById('pdf-import-error-card');
+    const successCard = document.getElementById('pdf-import-success-card');
+    const previewBox = document.getElementById('pdf-parsed-preview');
+
+    if (loadingState) loadingState.style.display = stateType === 'loading' ? 'block' : 'none';
+    if (errorCard) errorCard.style.display = stateType === 'error' ? 'block' : 'none';
+    if (successCard) successCard.style.display = stateType === 'success' ? 'block' : 'none';
+
+    if (stateType === 'loading') {
+      const t = document.getElementById('pdf-loading-title');
+      const d = document.getElementById('pdf-loading-desc');
+      if (t) t.textContent = titleMsg || "Processing PDF File...";
+      if (d) d.textContent = descMsg || "Extracting text, questions, options, and explanations from document.";
+      if (previewBox) previewBox.style.display = 'none';
+    } else if (stateType === 'error') {
+      const t = document.getElementById('pdf-error-title');
+      const d = document.getElementById('pdf-error-desc');
+      if (t) t.textContent = titleMsg || "Import Failed";
+      if (d) d.textContent = descMsg || "No valid questions detected.";
+      if (previewBox) previewBox.style.display = 'none';
+    }
   }
 
-  function openAuthModal() {
-    document.getElementById('auth-modal').style.display = 'flex';
+  function processUploadedPDFFile(file, isUniversal = false) {
+    activeProcessingFilename = file.name;
+    setPDFImportUIState('loading', `Processing "${file.name}"...`, "PDF.js engine is reading raw byte streams and parsing pages...");
+
+    if (file.type === "application/pdf" || file.name.endsWith(".pdf")) {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const typedarray = new Uint8Array(e.target.result);
+
+        if (window.pdfjsLib) {
+          window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+          window.pdfjsLib.getDocument(typedarray).promise.then(function (pdf) {
+            let maxPages = pdf.numPages;
+            let countPromises = [];
+
+            for (let i = 1; i <= maxPages; i++) {
+              countPromises.push(pdf.getPage(i).then(function (page) {
+                return page.getTextContent().then(function (textContent) {
+                  return textContent.items.map(item => item.str).join(' ');
+                });
+              }));
+            }
+
+            Promise.all(countPromises).then(function (pageTexts) {
+              const fullPDFText = pageTexts.join('\n');
+              
+              if (fullPDFText.trim().length < 30) {
+                const scannedMsg = `📷 "${file.name}" appears to be a scanned image PDF without selectable text. Please paste question text into the input box below!`;
+                setPDFImportUIState('error', 'Scanned Image PDF Detected', scannedMsg);
+                return;
+              }
+
+              pendingParsedQuestions = parseQuestionsFromText(fullPDFText, file.name);
+              renderParsedPDFPreview(file.name);
+            });
+          }).catch(function (err) {
+            setPDFImportUIState('error', 'PDF Parsing Exception', 'Failed to read binary PDF stream.');
+            fallbackTextRead(file, isUniversal);
+          });
+        } else {
+          fallbackTextRead(file, isUniversal);
+        }
+      };
+      reader.readAsArrayBuffer(file);
+    } else {
+      fallbackTextRead(file, isUniversal);
+    }
   }
 
-  function closeAuthModal() {
-    document.getElementById('auth-modal').style.display = 'none';
-  }
-
-  // Strict RBAC Authentication Login Processor
-  function performLogin() {
-    const email = document.getElementById('auth-email').value.trim().toLowerCase();
-    const isAdminAccount = email === "admin@dentistoire.edu" || email.includes("admin");
-
-    state.user = {
-      name: isAdminAccount ? "Dr. Hadeel Zadin" : (email ? email.split('@')[0] : "Student User"),
-      email: email || "student@dentistoire.edu",
-      role: isAdminAccount ? "ADMIN" : "STUDENT",
-      xp: state.xp || 0
+  function fallbackTextRead(file, isUniversal = false) {
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      const fileText = e.target.result || "";
+      pendingParsedQuestions = parseQuestionsFromText(fileText, file.name);
+      renderParsedPDFPreview(file.name);
     };
-    saveState();
-
-    updateRoleBasedUI();
-    showToast(isAdminAccount ? "🔑 Logged in as Administrator (Full Privileges)" : "Signed in as Student");
-    closeAuthModal();
+    reader.readAsText(file);
   }
 
-  function renderAdminUsersTable() {
-    const tbody = document.getElementById('admin-users-table-body');
-    if (!tbody) return;
+  function renderParsedPDFPreview(filename) {
+    if (!pendingParsedQuestions || pendingParsedQuestions.length === 0) {
+      setPDFImportUIState('error', 'No Questions Detected', `Could not find questions in "${filename}". Try copy-pasting question text into the input box below!`);
+      return;
+    }
 
-    const users = window.DENTISTOIRE_REGISTERED_USERS || [];
-    tbody.innerHTML = users.map(u => `
-      <tr style="border-bottom: 1px solid var(--card-border);">
-        <td style="padding: 0.75rem; font-weight: 600;">${u.name}</td>
-        <td style="padding: 0.75rem; color: var(--text-secondary);">${u.email}</td>
-        <td style="padding: 0.75rem;"><span class="btn-luxury" style="padding: 0.15rem 0.5rem; font-size: 0.7rem;">${u.role}</span></td>
-        <td style="padding: 0.75rem; color: var(--text-muted);">${u.joined}</td>
-        <td style="padding: 0.75rem; color: #10b981; font-weight: 600;">${u.status}</td>
-      </tr>
-    `).join('');
+    confirmImportPDFQuestions(true);
+  }
+
+  function parsePastedTextQuestions() {
+    const pasteInput = document.getElementById('pdf-paste-input');
+    if (!pasteInput) return;
+
+    const text = pasteInput.value.trim();
+    if (!text) {
+      setPDFImportUIState('error', 'Empty Text Area', 'Please paste question text into the input box first.');
+      return;
+    }
+
+    activeProcessingFilename = "Pasted Questions Text";
+    setPDFImportUIState('loading', 'Parsing Pasted Text...', 'Extracting questions and option structures...');
+    
+    setTimeout(() => {
+      pendingParsedQuestions = parseQuestionsFromText(text, "Pasted Questions Text");
+      confirmImportPDFQuestions(true);
+    }, 300);
+  }
+
+  // Strict Real-Text Question Parser Engine (No Mock Fallbacks)
+  function parseQuestionsFromText(text, filename) {
+    const cleanLines = text.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+    const parsed = [];
+
+    let currentQ = null;
+
+    cleanLines.forEach(line => {
+      const isQuestionHeader = /^(Q|Question|\d+[\.\)\:-])/i.test(line) || (line.endsWith('?') && line.length > 12);
+      const isOptionChoice = /^([A-D]|[a-d]|\d+)[\.\)\:-]/i.test(line) || /^[\bullet\-\*]\s+/i.test(line);
+      const isAnswerKey = /^(Answer|Key|Correct|Ans):/i.test(line);
+
+      if (isAnswerKey && currentQ) {
+        const keyMatch = line.match(/(Answer|Key|Correct|Ans):\s*([A-D1-4])/i);
+        if (keyMatch) {
+          const char = keyMatch[2].toUpperCase();
+          const charMap = { 'A': 0, 'B': 1, 'C': 2, 'D': 3, '1': 0, '2': 1, '3': 2, '4': 3 };
+          currentQ.correct = charMap[char] || 0;
+        }
+      } else if (isOptionChoice && currentQ) {
+        const optClean = line.replace(/^([A-D]|[a-d]|\d+)[\.\)\:-]\s*/i, '').replace(/^[\bullet\-\*]\s+/i, '');
+        currentQ.options.push({ en: optClean, ar: optClean });
+      } else if (isQuestionHeader) {
+        if (currentQ) parsed.push(currentQ);
+        const qTextClean = line.replace(/^(Q|Question|\d+)[\.\)\:-]\s*/i, '');
+        currentQ = {
+          question: { en: qTextClean, ar: qTextClean },
+          options: [],
+          correct: 0,
+          explanation: { en: "Extracted from lecture material.", ar: "تم استخراجه من محتوى المحاضرة." }
+        };
+      } else if (currentQ && currentQ.options.length < 4 && line.length > 2) {
+        currentQ.options.push({ en: line, ar: line });
+      }
+    });
+    if (currentQ) parsed.push(currentQ);
+
+    return parsed;
+  }
+
+  function confirmImportPDFQuestions(autoLaunch = true) {
+    const sbjSelect = document.getElementById('pdf-target-subject');
+    const sheetSelect = document.getElementById('pdf-target-sheet');
+
+    let targetSubject = (window.DENTAL_SUBJECTS || []).find(s => s && sbjSelect && s.id === sbjSelect.value);
+    if (!targetSubject) targetSubject = (window.DENTAL_SUBJECTS || [])[0];
+
+    let targetSheet = targetSubject && targetSubject.sheets ? targetSubject.sheets.find(sh => sheetSelect && sh.id === sheetSelect.value) : null;
+    if (!targetSheet && targetSubject && targetSubject.sheets) targetSheet = targetSubject.sheets[0];
+
+    if (!targetSheet) return;
+    if (!targetSheet.quizzes) targetSheet.quizzes = [];
+
+    const incomingBatch = pendingParsedQuestions.length > 0 ? pendingParsedQuestions : [];
+    if (incomingBatch.length === 0) {
+      setPDFImportUIState('error', 'No Questions Detected', 'No valid questions could be found in the provided text.');
+      return;
+    }
+
+    const existingTexts = new Set(targetSheet.quizzes.map(q => q.question.en.trim().toLowerCase()));
+    const nonDuplicates = [];
+
+    incomingBatch.forEach(q => {
+      const textKey = q.question.en.trim().toLowerCase();
+      if (!existingTexts.has(textKey)) {
+        existingTexts.add(textKey);
+        nonDuplicates.push(q);
+      }
+    });
+
+    if (nonDuplicates.length === 0 && targetSheet.quizzes.length === 0) {
+      nonDuplicates.push(...incomingBatch);
+    }
+
+    if (nonDuplicates.length > 0) {
+      targetSheet.quizzes.push(...nonDuplicates);
+      targetSheet.topicsCount = targetSheet.quizzes.length;
+
+      if (!state.customQuizzes) state.customQuizzes = [];
+      state.customQuizzes.push({
+        subjectId: targetSubject.id,
+        sheetId: targetSheet.id,
+        questions: nonDuplicates
+      });
+
+      saveState();
+    }
+
+    lastImportTarget = {
+      subjectId: targetSubject.id,
+      sheetId: targetSheet.id
+    };
+
+    setPDFImportUIState('none');
+    showToast(`✅ ${nonDuplicates.length} Questions imported into ${targetSheet.title[state.language] || 'sheet'}`);
+    pendingParsedQuestions = [];
+
+    if (autoLaunch) {
+      setTimeout(() => {
+        selectSubject(targetSubject.id);
+        setTimeout(() => startSheetQuestions(targetSheet.id), 200);
+      }, 300);
+    }
+  }
+
+  function launchImportedQuizNow() {
+    if (!lastImportTarget) {
+      showToast("No recent import target found.");
+      return;
+    }
+
+    const subjects = window.DENTAL_SUBJECTS || [];
+    const sbj = subjects.find(s => s.id === lastImportTarget.subjectId);
+    if (sbj) {
+      selectSubject(sbj.id);
+      setTimeout(() => startSheetQuestions(lastImportTarget.sheetId), 300);
+      const succCard = document.getElementById('pdf-import-success-card');
+      if (succCard) succCard.style.display = 'none';
+    }
+  }
+
+  function navigateToImportedSheet() {
+    if (!lastImportTarget) return;
+    selectSubject(lastImportTarget.subjectId);
   }
 
   function renderActivityChart() {
@@ -2918,6 +3781,7 @@ window.DENTISTOIRE_INITIAL_USER = {
 
   // App Engine Initialization
   function initApp() {
+    mergeCustomQuizzes();
     setTheme(state.theme);
     setLanguage(state.language);
     initRealtimeSearch();
@@ -2940,18 +3804,35 @@ window.DENTISTOIRE_INITIAL_USER = {
     const pdfDrop = document.getElementById('pdf-drop-zone');
     const pdfInput = document.getElementById('pdf-file-input');
 
-    if (pdfDrop && pdfInput) {
-      pdfDrop.addEventListener('click', () => pdfInput.click());
+    if (pdfInput) {
       pdfInput.addEventListener('change', (e) => {
         if (e.target.files && e.target.files[0]) {
-          document.getElementById('pdf-preview-list').innerHTML = `
-            <div style="padding: 0.5rem; border-bottom: 1px solid var(--card-border);"><strong>Q1.</strong> Which cell produces enamel matrix during amelogenesis?</div>
-            <div style="padding: 0.5rem; border-bottom: 1px solid var(--card-border);"><strong>Q2.</strong> What is the primary mineral constituent of mature enamel?</div>
-            <div style="padding: 0.5rem; border-bottom: 1px solid var(--card-border);"><strong>Q3.</strong> Which landmark supports a maxillary complete denture?</div>
-            <div style="padding: 0.5rem;"><strong>Q4.</strong> Why is Epinephrine added to Local Anesthetics?</div>
-          `;
-          document.getElementById('pdf-parsed-preview').style.display = 'block';
-          showToast(`📄 File "${e.target.files[0].name}" parsed! 4 Questions extracted.`);
+          processUploadedPDFFile(e.target.files[0], false);
+        }
+      });
+    }
+
+    if (pdfDrop) {
+      ['dragenter', 'dragover'].forEach(eventName => {
+        pdfDrop.addEventListener(eventName, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          pdfDrop.classList.add('drag-active');
+        }, false);
+      });
+
+      ['dragleave', 'drop'].forEach(eventName => {
+        pdfDrop.addEventListener(eventName, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          pdfDrop.classList.remove('drag-active');
+        }, false);
+      });
+
+      pdfDrop.addEventListener('drop', (e) => {
+        const dt = e.dataTransfer;
+        if (dt && dt.files && dt.files[0]) {
+          processUploadedPDFFile(dt.files[0], false);
         }
       });
     }
@@ -3005,10 +3886,17 @@ window.DENTISTOIRE_INITIAL_USER = {
     claimMissionReward,
     startWeakTopicQuiz,
     openLabPlaceholder,
+    processUploadedPDFFile,
+    parsePastedTextQuestions,
     confirmImportPDFQuestions,
+    launchImportedQuizNow,
+    navigateToImportedSheet,
+    switchAuthTab,
     openAuthModal,
     closeAuthModal,
     performLogin,
+    performSignup,
+    performLogout,
     triggerAppleCelebrationEffect
   };
 
@@ -3017,5 +3905,3 @@ window.DENTISTOIRE_INITIAL_USER = {
 </script>
 </body>
 </html>
-
-<!-- Build timestamp: 1786055222.702053 -->
