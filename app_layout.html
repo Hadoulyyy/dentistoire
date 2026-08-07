@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" data-theme="dream-blush">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Bienvenue chez DENTISTOIRE — Luxury Dental Education Platform</title>
+  <meta name="description" content="A soft and inspiring space to learn, take care, and make every smile shine.">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- PDF.js CDN for Client-Side Binary PDF Text Extraction -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  
+  <!-- Custom Dual-Theme Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Confetti & Celebration Layer -->
+    <canvas id="confetti-canvas"></canvas>
+    <div class="celebration-flash-overlay" id="celebration-overlay"></div>
+    <div class="screen-ripple-overlay" id="screen-ripple"></div>
+    <div id="flying-xp-particle" class="flying-xp-particle" style="display: none;">+25 XP ✨</div>
+
+    <!-- Toast Alerts -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- Floating Glass Navigation Bar -->
+    <div class="top-navbar-wrapper">
+      <nav class="top-navbar">
+        <div class="brand-logo" onclick="window.DentistoireApp.navigateTo('view-home')">
+          <div class="official-brand-badge">
+            <span class="brand-welcome">Bienvenue chez</span>
+            <h1 class="brand-title"><i class="fa-solid fa-tooth"></i> DENTISTOIRE</h1>
+          </div>
+        </div>
+
+        <div class="nav-links">
+          <button class="nav-link-btn active" data-target="view-home" onclick="window.DentistoireApp.navigateTo('view-home')">
+            <i class="fa-solid fa-house"></i>
+            <span data-i18n="nav_home">Home</span>
+          </button>
+          <button class="nav-link-btn" data-target="view-subjects" onclick="window.DentistoireApp.navigateTo('view-subjects')">
+            <i class="fa-solid fa-book-open"></i>
+            <span data-i18n="nav_subjects">Subjects</span>
+          </button>
+          <button class="nav-link-btn" data-target="view-focus-mode" onclick="window.DentistoireApp.navigateTo('view-focus-mode')">
+            <i class="fa-solid fa-clock"></i>
+            <span data-i18n="nav_focus">Focus Mode</span>
+          </button>
+          <button class="nav-link-btn" data-target="view-lab-quizzes" onclick="window.DentistoireApp.navigateTo('view-lab-quizzes')">
+            <i class="fa-solid fa-flask-vial"></i>
+            <span data-i18n="nav_lab">Lab Quiz</span>
+          </button>
+          <button class="nav-link-btn" data-target="view-saved-weak" onclick="window.DentistoireApp.navigateTo('view-saved-weak')">
+            <i class="fa-solid fa-star"></i>
+            <span data-i18n="nav_saved">Saved & Weak</span>
+          </button>
+          <button class="nav-link-btn" data-target="view-analytics" onclick="window.DentistoireApp.navigateTo('view-analytics')">
+            <i class="fa-solid fa-chart-line"></i>
+            <span data-i18n="nav_analytics">Analytics</span>
+          </button>
+          <button class="nav-link-btn" data-target="view-admin-hub" onclick="window.DentistoireApp.navigateTo('view-admin-hub')">
+            <i class="fa-solid fa-shield-halved"></i>
+            <span data-i18n="nav_admin">Admin Hub</span>
+          </button>
+        </div>
+
+        <div class="nav-actions">
+          <div class="nav-xp-badge" id="nav-xp-badge" title="Academic Rank & Total XP">
+            <i class="fa-solid fa-bolt" style="color: #f59e0b;"></i>
+            <span id="nav-xp-val">0 XP</span>
+          </div>
+          
+          <!-- Student Login & Session Badge -->
+          <button class="btn-luxury" id="btn-auth-trigger" style="padding: 0.35rem 0.85rem; font-size: 0.8rem;" onclick="window.DentistoireApp.openAuthModal()">
+            <i class="fa-solid fa-right-to-bracket"></i> <span id="auth-nav-label">Sign In / Log In</span>
+          </button>
+
+          <div id="user-session-badge" style="display: none; align-items: center; gap: 0.5rem; background: var(--bg-secondary); padding: 0.25rem 0.65rem; border-radius: var(--radius-full); border: 1px solid var(--card-border);">
+            <span style="font-size: 0.8rem; font-weight: 700; color: var(--primary);" id="nav-user-display-name">👤 Student</span>
+            <button class="icon-circle-btn" style="width: 26px; height: 26px; font-size: 0.7rem; color: #ef4444;" title="Log Out" onclick="window.DentistoireApp.performLogout()"><i class="fa-solid fa-right-from-bracket"></i></button>
+          </div>
+
+          <button class="icon-circle-btn" id="btn-theme-toggle" title="Toggle Theme (Dream Blush / Noir Titanium)" onclick="window.DentistoireApp.toggleTheme()">
+            <i class="fa-solid fa-wand-magic-sparkles" id="theme-btn-icon"></i>
+          </button>
+          <button class="icon-circle-btn" id="btn-lang-toggle" title="Toggle Language (English / العربية)" onclick="window.DentistoireApp.toggleLanguage()">
+            <span id="lang-btn-text" style="font-size: 0.75rem; font-weight: 800;">EN</span>
+          </button>
+        </div>
+      </nav>
+    </div>
+
+    <!-- Main Container -->
+    <div class="page-container">
+      
+      <!-- Dynamic Breadcrumb Navigation Bar -->
+      <div id="breadcrumb-bar" class="breadcrumb-nav-bar" style="margin-bottom: 1.5rem;">
+        <span class="crumb-link" onclick="window.DentistoireApp.navigateTo('view-home')"><i class="fa-solid fa-house"></i> Home</span>
+        <span class="crumb-separator">&rarr;</span>
+        <span class="crumb-active" id="crumb-active-title">Dashboard</span>
+      </div>
+
+      <!-- View 1: Clean Luxury Home Dashboard -->
+      <section id="view-home" class="page-view active">
+        <div class="hero-wrapper">
+          <div class="hero-glowing-arch"></div>
+          
+          <div style="margin-bottom: 0.75rem; display: inline-flex; align-items: center; gap: 0.5rem; background: var(--primary-glow); padding: 0.4rem 1rem; border-radius: var(--radius-full); border: 1px solid var(--primary);">
+            <i class="fa-solid fa-sparkles" style="color: var(--primary);"></i>
+            <span style="font-size: 0.8rem; font-weight: 700; color: var(--text-primary); font-family: 'Cinzel', serif;">Bienvenue chez DENTISTOIRE</span>
+          </div>
+
+          <h2 class="hero-title">Learn. Understand. Smile.</h2>
+          <p class="hero-subtitle">A soft and inspiring space to learn, take care, and make every smile shine.</p>
+
+          <!-- Functional Real-Time Search Bar with Dropdown Results -->
+          <div class="search-container-relative" style="position: relative; max-width: 550px; margin-top: 1rem;">
+            <div class="luxury-search-bar">
+              <i class="fa-solid fa-magnifying-glass" style="color: var(--primary);"></i>
+              <input type="text" id="home-search-input" placeholder="Search dental subjects (e.g., Oral Histology) or sheets...">
+            </div>
+            <div id="search-results-dropdown" class="search-dropdown-menu" style="display: none;"></div>
+          </div>
+        </div>
+
+        <!-- Dashboard Widgets & XP Progress Bar -->
+        <div class="dashboard-widgets-grid">
+          <div class="glass-widget-card">
+            <div class="widget-icon"><i class="fa-solid fa-chart-line"></i></div>
+            <div class="widget-val" id="widget-val-progress">0%</div>
+            <div class="widget-lbl">Overall Learning Progress</div>
+          </div>
+          <div class="glass-widget-card">
+            <div class="widget-icon" style="background: rgba(245, 158, 11, 0.2); color: #f59e0b;"><i class="fa-solid fa-fire"></i></div>
+            <div class="widget-val" id="widget-val-streak">0 Days</div>
+            <div class="widget-lbl">Daily Study Consistency</div>
+          </div>
+          <div class="glass-widget-card" style="grid-column: span 2;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+              <div class="widget-lbl" style="font-weight: 700;">Academic Rank: <span id="home-academic-rank" style="color: var(--primary);">Freshman</span></div>
+              <span id="home-xp-val" style="font-weight: 700; font-size: 0.9rem;">0 / 100 XP</span>
+            </div>
+            <div class="progress-bar-track">
+              <div class="progress-bar-fill" id="home-xp-progress-fill" style="width: 0%;"></div>
+            </div>
+            <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;">Next Rank: Learner (+100 XP)</p>
+          </div>
+        </div>
+
+        <!-- Dashboard Study To-Do List Widget -->
+        <div class="glass-widget-card" style="margin-bottom: 2.5rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+            <div>
+              <h3 style="font-family: 'Playfair Display', serif; font-size: 1.4rem;">
+                <i class="fa-solid fa-square-check" style="color: var(--primary);"></i> Study To-Do List
+              </h3>
+              <p style="font-size: 0.85rem; color: var(--text-secondary);" id="todo-progress-counter">0 of 0 tasks completed (0%)</p>
+            </div>
+            <button class="btn-luxury" style="padding: 0.35rem 0.85rem; font-size: 0.8rem;" onclick="window.DentistoireApp.openAddTodoModal()">
+              <i class="fa-solid fa-plus"></i> Add Task
+            </button>
+          </div>
+
+          <div class="progress-bar-track" style="margin-bottom: 1.25rem;">
+            <div class="progress-bar-fill" id="todo-progress-fill" style="width: 0%;"></div>
+          </div>
+
+          <div id="home-todo-list" style="display: flex; flex-direction: column; gap: 0.75rem;"></div>
+        </div>
+
+        <!-- Daily Missions & Study Calendar Grid -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-bottom: 2.5rem;">
+          <div class="glass-widget-card">
+            <h3 style="font-family: 'Playfair Display', serif; font-size: 1.3rem; margin-bottom: 1rem;"><i class="fa-solid fa-list-check" style="color: var(--primary);"></i> Daily Missions</h3>
+            <div id="home-daily-missions-list" style="display: flex; flex-direction: column; gap: 0.75rem;"></div>
+          </div>
+          
+          <div class="glass-widget-card">
+            <h3 style="font-family: 'Playfair Display', serif; font-size: 1.3rem; margin-bottom: 1rem;"><i class="fa-solid fa-calendar-days" style="color: #10b981;"></i> 30-Day Study Calendar</h3>
+            <div id="home-study-heatmap" class="study-heatmap-grid"></div>
+            <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.75rem;">Visually tracks daily active study sessions.</p>
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+          <h3 style="font-family: 'Playfair Display', serif; font-size: 1.6rem;">Official Curriculum Subjects</h3>
+        </div>
+        <div class="cards-grid" id="home-featured-subjects"></div>
+      </section>
+
+      <!-- View 2: Focus Study Mode (Pomodoro Timer) -->
+      <section id="view-focus-mode" class="page-view">
+        <div class="glass-widget-card" style="max-width: 650px; margin: 0 auto; text-align: center; padding: 3rem 2rem;">
+          <h2 style="font-family: 'Playfair Display', serif; font-size: 2.2rem; margin-bottom: 0.5rem;">Focus Study Mode</h2>
+          <p style="color: var(--text-secondary); margin-bottom: 2rem;">Distraction-free timer designed for deep dental lecture study.</p>
+
+          <!-- Circular SVG Countdown Timer -->
+          <div class="circular-timer-wrapper">
+            <svg class="circular-timer-svg" width="220" height="220">
+              <circle class="timer-circle-bg" cx="110" cy="110" r="95"></circle>
+              <circle class="timer-circle-progress" id="timer-progress-svg" cx="110" cy="110" r="95"></circle>
+            </svg>
+            <div class="timer-clock-display" id="focus-timer-clock">25:00</div>
+          </div>
+
+          <!-- Timer Preset Buttons -->
+          <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem; margin-bottom: 2rem;">
+            <button class="btn-luxury" style="padding: 0.35rem 0.85rem; font-size: 0.8rem;" onclick="window.DentistoireApp.setFocusPreset(25)">25 Mins</button>
+            <button class="btn-luxury" style="padding: 0.35rem 0.85rem; font-size: 0.8rem;" onclick="window.DentistoireApp.setFocusPreset(45)">45 Mins</button>
+            <button class="btn-luxury" style="padding: 0.35rem 0.85rem; font-size: 0.8rem;" onclick="window.DentistoireApp.setFocusPreset(60)">60 Mins</button>
+            <button class="btn-luxury" style="padding: 0.35rem 0.85rem; font-size: 0.8rem;" onclick="window.DentistoireApp.setFocusPreset(90)">90 Mins</button>
+          </div>
+
+          <!-- Timer Controls -->
+          <div style="display: flex; justify-content: center; gap: 1rem;">
+            <button class="btn-luxury" id="btn-focus-toggle" style="padding: 0.75rem 2rem; font-size: 1rem;" onclick="window.DentistoireApp.toggleFocusTimer()">Start Focus Session</button>
+            <button class="icon-circle-btn" style="width: 46px; height: 46px;" onclick="window.DentistoireApp.resetFocusTimer()"><i class="fa-solid fa-rotate-left"></i></button>
+          </div>
+        </div>
+      </section>
+
+      <!-- View 3: Subjects Catalog -->
+      <section id="view-subjects" class="page-view">
+        <div style="margin-bottom: 2rem;">
+          <h2 style="font-family: 'Playfair Display', serif; font-size: 2.2rem; margin-bottom: 0.5rem;">Dental Subjects Library</h2>
+          <p style="color: var(--text-secondary);">Select a subject to view its official lecture sheets.</p>
+        </div>
+        <div class="cards-grid" id="catalog-subjects-grid"></div>
+      </section>
+
+      <!-- View 2B: Sheet List for Selected Subject -->
+      <section id="view-sheet-list" class="page-view">
+        <div style="margin-bottom: 2rem;">
+          <button class="btn-luxury" style="padding: 0.3rem 0.8rem; font-size: 0.8rem; margin-bottom: 1rem;" onclick="window.DentistoireApp.navigateTo('view-subjects')">
+            &larr; Back to Subjects
+          </button>
+          <h2 id="sheet-list-subject-title" style="font-family: 'Playfair Display', serif; font-size: 2.2rem; margin-bottom: 0.5rem;">Oral Histology Sheets</h2>
+          <p id="sheet-list-subject-desc" style="color: var(--text-secondary);">Select a sheet to launch the interactive questions and reading content.</p>
+        </div>
+        <div class="cards-grid" id="sheets-grid-container"></div>
+      </section>
+
+      <!-- View 4: Laboratory Quiz Section -->
+      <section id="view-lab-quizzes" class="page-view">
+        <div style="margin-bottom: 2rem;">
+          <h2 style="font-family: 'Playfair Display', serif; font-size: 2.2rem; margin-bottom: 0.5rem;">Laboratory Quiz Library</h2>
+          <p style="color: var(--text-secondary);">Image-based practical slide exams and 3D dental identification modules.</p>
+        </div>
+        <div class="cards-grid" id="lab-placeholders-grid"></div>
+      </section>
+
+      <!-- View 5: Saved & Weak Questions -->
+      <section id="view-saved-weak" class="page-view">
+        <!-- Smart AI Review Recommendation Box -->
+        <div id="smart-review-box" class="glass-widget-card" style="margin-bottom: 2rem; border-left: 4px solid var(--primary);">
+          <div style="display: flex; gap: 1rem; align-items: flex-start;">
+            <div style="font-size: 2rem; color: var(--primary);"><i class="fa-solid fa-brain"></i></div>
+            <div>
+              <h3 style="font-family: 'Playfair Display', serif; font-size: 1.3rem; margin-bottom: 0.3rem;">Smart Review Recommendation</h3>
+              <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1rem;" id="smart-review-text">
+                You are performing very well in Enamel & Dentin, but your weakest topic is Dental Pulp. We recommend reviewing Sheet 8 before taking another quiz.
+              </p>
+              <button class="btn-luxury" style="padding: 0.4rem 1rem; font-size: 0.8rem;" onclick="window.DentistoireApp.startWeakTopicQuiz()"><i class="fa-solid fa-bolt"></i> Launch Personalized Weak Topic Quiz</button>
+            </div>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+          <div class="glass-widget-card">
+            <h3 style="font-family: 'Playfair Display', serif; font-size: 1.4rem; margin-bottom: 1rem;"><i class="fa-solid fa-bookmark" style="color: var(--primary);"></i> Saved Questions for Re-Study</h3>
+            <div id="saved-quizzes-list"></div>
+          </div>
+          <div class="glass-widget-card">
+            <h3 style="font-family: 'Playfair Display', serif; font-size: 1.4rem; margin-bottom: 1rem;"><i class="fa-solid fa-triangle-exclamation" style="color: #ef4444;"></i> Weak Questions & Mistakes</h3>
+            <div id="weak-questions-list"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- View 6: Analytics -->
+      <section id="view-analytics" class="page-view">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+          <div class="glass-widget-card">
+            <h3 style="font-family: 'Playfair Display', serif; font-size: 1.3rem; margin-bottom: 1rem;"><i class="fa-solid fa-chart-bar"></i> Weekly Activity Overview</h3>
+            <canvas id="canvas-activity-chart" height="180"></canvas>
+          </div>
+          <div class="glass-widget-card">
+            <h3 style="font-family: 'Playfair Display', serif; font-size: 1.3rem; margin-bottom: 1rem;"><i class="fa-solid fa-chart-pie"></i> Performance by Subject</h3>
+            <canvas id="canvas-subject-pie" height="180"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <!-- View 7: Private Admin Hub with Registered Student Logins & PDF Importer -->
+      <section id="view-admin-hub" class="page-view">
+        <div class="glass-widget-card" style="space-y: 2rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+            <div>
+              <h2 style="font-family: 'Playfair Display', serif; font-size: 1.8rem;">Admin Control Center</h2>
+              <p style="color: var(--text-secondary); font-size: 0.9rem;">Manage subjects, sheets, questions, PDF imports, and registered student logins.</p>
+            </div>
+            <div style="display: flex; gap: 0.5rem;">
+              <button class="btn-luxury" id="btn-export-backup"><i class="fa-solid fa-download"></i> Backup State</button>
+            </div>
+          </div>
+
+          <!-- PDF Importer Workflow -->
+          <div style="background: var(--bg-secondary); border: 1px solid var(--card-border); padding: 1.5rem; border-radius: var(--radius-md); margin-bottom: 2rem;">
+            <h3 style="margin-bottom: 1rem;"><i class="fa-solid fa-file-pdf" style="color: var(--primary);"></i> Real PDF & Text Question Import Tool</h3>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
+              <div>
+                <label style="font-size: 0.85rem; font-weight: 600;">Select Target Subject:</label>
+                <select id="pdf-target-subject" class="luxury-search-bar" style="width: 100%; margin-top: 0.3rem;"></select>
+              </div>
+              <div>
+                <label style="font-size: 0.85rem; font-weight: 600;">Select Target Sheet:</label>
+                <select id="pdf-target-sheet" class="luxury-search-bar" style="width: 100%; margin-top: 0.3rem;"></select>
+              </div>
+            </div>
+
+            <!-- Absolute Overlay Dropzone -->
+            <div id="pdf-drop-zone" style="position: relative; border: 2px dashed var(--card-border); padding: 2.5rem 1.5rem; text-align: center; border-radius: var(--radius-md); background: var(--card-bg); overflow: hidden; margin-bottom: 1rem;">
+              <input type="file" id="pdf-file-input" accept=".pdf,.txt,.docx,.doc" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; z-index: 10;">
+              
+              <i class="fa-solid fa-cloud-arrow-up" style="font-size: 2.8rem; color: var(--primary); margin-bottom: 0.75rem; pointer-events: none;"></i>
+              <h4 style="margin-bottom: 0.3rem; font-size: 1.15rem; pointer-events: none;">Drag & Drop Your Real PDF File or Click Anywhere to Browse</h4>
+              <p style="font-size: 0.85rem; color: var(--text-secondary); pointer-events: none;">PDF.js engine parses binary PDF text and creates interactive quiz automatically</p>
+            </div>
+
+            <!-- Direct Paste Alternative Box -->
+            <div style="background: var(--card-bg); border: 1px solid var(--card-border); padding: 1rem; border-radius: var(--radius-md);">
+              <label style="font-size: 0.85rem; font-weight: 600; display: block; margin-bottom: 0.4rem;">
+                <i class="fa-solid fa-paste" style="color: var(--primary);"></i> Or Paste Question Text / PDF Content Directly:
+              </label>
+              <textarea id="pdf-paste-input" class="luxury-search-bar" style="width: 100%; height: 100px; border-radius: var(--radius-sm); resize: vertical; font-size: 0.85rem;" placeholder="Paste dental lecture text or questions here (e.g. Q1. Which cell produces enamel matrix? A. Ameloblasts B. Odontoblasts C. Cementoblasts D. Osteoblasts Answer: A)..."></textarea>
+              <button class="btn-luxury" style="margin-top: 0.75rem; padding: 0.35rem 0.95rem; font-size: 0.8rem;" onclick="window.DentistoireApp.parsePastedTextQuestions()">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> Parse Pasted Questions & Create Quiz
+              </button>
+            </div>
+
+            <!-- PDF Import Loading State -->
+            <div id="pdf-import-loading-state" style="display: none; margin-top: 1.5rem; background: var(--bg-secondary); padding: 1.5rem; border-radius: var(--radius-md); border: 1px solid var(--card-border); text-align: center;">
+              <i class="fa-solid fa-circle-notch fa-spin" style="font-size: 2.5rem; color: var(--primary); margin-bottom: 0.75rem;"></i>
+              <h4 style="font-size: 1.1rem; margin-bottom: 0.3rem;" id="pdf-loading-title">Processing PDF File...</h4>
+              <p style="font-size: 0.85rem; color: var(--text-secondary);" id="pdf-loading-desc">Extracting text, questions, options, and explanations from document.</p>
+            </div>
+
+            <!-- PDF Import Error State Card -->
+            <div id="pdf-import-error-card" style="display: none; margin-top: 1.5rem; background: rgba(239, 68, 68, 0.12); padding: 1.25rem; border-radius: var(--radius-md); border: 1px solid #ef4444; color: var(--text-primary);">
+              <div style="display: flex; gap: 0.85rem; align-items: flex-start;">
+                <i class="fa-solid fa-triangle-exclamation" style="font-size: 1.5rem; color: #ef4444; margin-top: 0.2rem;"></i>
+                <div>
+                  <h4 style="font-size: 1.1rem; color: #ef4444; margin-bottom: 0.3rem;" id="pdf-error-title">Import Failed</h4>
+                  <p style="font-size: 0.88rem; color: var(--text-primary); line-height: 1.5;" id="pdf-error-desc">No valid multiple choice questions could be detected in this document.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- PDF Parsed Questions Preview Box -->
+            <div id="pdf-parsed-preview" style="display: none; margin-top: 1.5rem; background: var(--card-bg); padding: 1.25rem; border-radius: var(--radius-md); border: 1px solid var(--card-border);">
+              <h4 style="margin-bottom: 0.75rem;" id="pdf-preview-title"><i class="fa-solid fa-eye"></i> Extracted Questions Preview</h4>
+              <div id="pdf-preview-list" style="max-height: 220px; overflow-y: auto; margin-bottom: 1rem; font-size: 0.85rem;"></div>
+              <button class="btn-luxury" onclick="window.DentistoireApp.confirmImportPDFQuestions()"><i class="fa-solid fa-file-import"></i> Confirm & Import into Sheet</button>
+            </div>
+
+            <!-- PDF Import Success & Instant Launch Banner -->
+            <div id="pdf-import-success-card" style="display: none; margin-top: 1.5rem; background: var(--primary-glow); padding: 1.5rem; border-radius: var(--radius-md); border: 2px solid var(--primary);">
+              <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                <div style="width: 48px; height: 48px; border-radius: 50%; background: #10b981; color: white; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; shrink: 0;">
+                  <i class="fa-solid fa-check"></i>
+                </div>
+                <div>
+                  <h3 style="font-family: 'Playfair Display', serif; font-size: 1.35rem; color: var(--text-primary); margin-bottom: 0.2rem;" id="import-success-title">✅ Import Successful</h3>
+                  <p style="font-size: 0.88rem; color: var(--text-secondary);" id="import-success-subtitle">Successfully added new questions to your curriculum.</p>
+                </div>
+              </div>
+
+              <!-- Details Grid -->
+              <div style="background: var(--card-bg); padding: 1rem; border-radius: var(--radius-sm); border: 1px solid var(--card-border); display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.85rem; margin-bottom: 1.25rem; font-size: 0.85rem;">
+                <div><span style="color: var(--text-muted); display: block; font-size: 0.75rem;">Source Document:</span><strong id="import-detail-file">document.pdf</strong></div>
+                <div><span style="color: var(--text-muted); display: block; font-size: 0.75rem;">Destination Path:</span><strong id="import-detail-path">Oral Histology &rarr; Enamel</strong></div>
+                <div><span style="color: var(--text-muted); display: block; font-size: 0.75rem;">Questions Detected:</span><strong id="import-detail-detected">42 Questions</strong></div>
+                <div><span style="color: var(--text-muted); display: block; font-size: 0.75rem;">Status & Added:</span><strong id="import-detail-added" style="color: #10b981;">42 Added (0 Duplicates Skipped)</strong></div>
+              </div>
+
+              <!-- Action Buttons -->
+              <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+                <button class="btn-luxury glowing-continue-btn" style="padding: 0.6rem 1.4rem; font-size: 0.9rem;" onclick="window.DentistoireApp.launchImportedQuizNow()">
+                  <i class="fa-solid fa-play"></i> ▶️ Start Quiz
+                </button>
+                <button class="btn-luxury" style="padding: 0.6rem 1.2rem; font-size: 0.9rem; background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--card-border);" onclick="window.DentistoireApp.navigateToImportedSheet()">
+                  <i class="fa-solid fa-folder-open"></i> 📚 View Sheet in Library
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Registered Student Logins Directory Table -->
+          <div style="background: var(--bg-secondary); border: 1px solid var(--card-border); padding: 1.5rem; border-radius: var(--radius-md);">
+            <h3 style="margin-bottom: 1rem;"><i class="fa-solid fa-users"></i> Registered Student Logins Directory</h3>
+            <div style="overflow-x: auto;">
+              <table style="width: 100%; text-align: left; font-size: 0.85rem; border-collapse: collapse;">
+                <thead>
+                  <tr style="border-bottom: 1px solid var(--card-border); color: var(--text-muted);">
+                    <th style="padding: 0.75rem;">Student User</th>
+                    <th style="padding: 0.75rem;">Email Address</th>
+                    <th style="padding: 0.75rem;">Role</th>
+                    <th style="padding: 0.75rem;">Joined Date</th>
+                    <th style="padding: 0.75rem;">Status</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-users-table-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- View 8: Profile & Achievements Badges Grid -->
+      <section id="view-profile" class="page-view">
+        <div class="glass-widget-card" style="text-align: center; padding: 3rem 1.5rem; margin-bottom: 2rem;">
+          <div style="width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--accent-gold)); margin: 0 auto 1rem auto; display: flex; align-items: center; justify-content: center; font-size: 2rem; color: white; font-weight: 700;" id="profile-user-avatar">HZ</div>
+          <h2 style="font-family: 'Playfair Display', serif; font-size: 2rem; margin-bottom: 0.2rem;" id="profile-user-name">Dr. Hadeel Zadin</h2>
+          <p style="color: var(--text-secondary); margin-bottom: 1.5rem;" id="profile-user-role">Dental Student &bull; Admin Scholar</p>
+          
+          <div style="display: flex; justify-content: center; gap: 2rem; margin-bottom: 1.5rem;">
+            <div><h3 style="font-size: 1.5rem;" id="profile-val-xp">0 XP</h3><p style="color: var(--text-muted); font-size: 0.85rem;">Total XP</p></div>
+            <div><h3 style="font-size: 1.5rem;" id="profile-val-level">Freshman</h3><p style="color: var(--text-muted); font-size: 0.85rem;">Academic Rank</p></div>
+            <div><h3 style="font-size: 1.5rem;" id="profile-val-streak">0 Days</h3><p style="color: var(--text-muted); font-size: 0.85rem;">Study Streak</p></div>
+          </div>
+
+          <button class="btn-luxury" style="padding: 0.4rem 1.2rem; font-size: 0.85rem; background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid #ef4444;" onclick="window.DentistoireApp.performLogout()">
+            <i class="fa-solid fa-right-from-bracket"></i> Log Out of Account
+          </button>
+        </div>
+
+        <div class="glass-widget-card">
+          <h3 style="font-family: 'Playfair Display', serif; font-size: 1.4rem; margin-bottom: 1.5rem;"><i class="fa-solid fa-award" style="color: var(--accent-gold);"></i> Academic Achievement Badges</h3>
+          <div id="profile-badges-grid" class="cards-grid"></div>
+        </div>
+      </section>
+
+      <!-- View 9: Settings -->
+      <section id="view-settings" class="page-view">
+        <div class="glass-widget-card" style="max-width: 600px; margin: 0 auto;">
+          <h2 style="font-family: 'Playfair Display', serif; font-size: 1.8rem; margin-bottom: 1.5rem;">Platform Settings</h2>
+          
+          <div style="margin-bottom: 1.5rem;">
+            <label style="font-weight: 600; display: block; margin-bottom: 0.5rem;">Visual Theme</label>
+            <select class="luxury-search-bar" id="settings-theme-select" style="width: 100%;" onchange="window.DentistoireApp.setTheme(this.value)">
+              <option value="dream-blush">Theme 1 — Dream Blush (Feminine Luxury)</option>
+              <option value="noir-titanium">Theme 2 — Noir Titanium (Masculine Luxury)</option>
+            </select>
+          </div>
+
+          <div style="margin-bottom: 1.5rem;">
+            <label style="font-weight: 600; display: block; margin-bottom: 0.5rem;">Interface Language</label>
+            <select class="luxury-search-bar" id="settings-lang-select" style="width: 100%;" onchange="window.DentistoireApp.setLanguage(this.value)">
+              <option value="en">English (LTR)</option>
+              <option value="ar">العربية (Arabic RTL)</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <!-- Add/Edit Study Task Modal -->
+  <div class="quiz-modal-backdrop" id="todo-modal" style="display: none;">
+    <div class="quiz-runner-card" style="max-width: 480px; text-align: left;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+        <h3 style="font-family: 'Playfair Display', serif; font-size: 1.5rem;" id="todo-modal-title">Add Study Task</h3>
+        <button onclick="window.DentistoireApp.closeTodoModal()" style="background: transparent; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
+      </div>
+
+      <input type="hidden" id="todo-edit-id">
+
+      <div style="margin-bottom: 1rem;">
+        <label style="font-size: 0.85rem; font-weight: 600; display: block; margin-bottom: 0.3rem;">Task Description:</label>
+        <input type="text" id="todo-input-title" class="luxury-search-bar" style="width: 100%;" placeholder="e.g. Review Oral Histology Sheet 4 Enamel Matrix">
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+        <div>
+          <label style="font-size: 0.85rem; font-weight: 600; display: block; margin-bottom: 0.3rem;">Priority Level:</label>
+          <select id="todo-input-priority" class="luxury-search-bar" style="width: 100%;">
+            <option value="Low">Low Priority</option>
+            <option value="Medium" selected>Medium Priority</option>
+            <option value="High">High Priority</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size: 0.85rem; font-weight: 600; display: block; margin-bottom: 0.3rem;">Due Date:</label>
+          <input type="date" id="todo-input-date" class="luxury-search-bar" style="width: 100%;">
+        </div>
+      </div>
+
+      <button class="btn-luxury" style="width: 100%; justify-content: center;" onclick="window.DentistoireApp.saveTodoTask()">Save Task</button>
+    </div>
+  </div>
+
+  <!-- Dual-Tab Student Authentication Modal (Log In & Sign Up) -->
+  <div class="quiz-modal-backdrop" id="auth-modal" style="display: none;">
+    <div class="quiz-runner-card" style="max-width: 480px; text-align: left;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <h3 style="font-family: 'Playfair Display', serif; font-size: 1.6rem;"><i class="fa-solid fa-tooth" style="color: var(--primary);"></i> Student Account Access</h3>
+        <button onclick="window.DentistoireApp.closeAuthModal()" style="background: transparent; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
+      </div>
+
+      <!-- Auth Tabs Bar -->
+      <div style="display: flex; border-bottom: 2px solid var(--card-border); margin-bottom: 1.25rem;">
+        <button id="auth-tab-login" class="btn-luxury" style="flex: 1; border-radius: 0; background: transparent; color: var(--primary); border-bottom: 2px solid var(--primary); font-weight: 700; padding: 0.5rem;" onclick="window.DentistoireApp.switchAuthTab('login')">
+          <i class="fa-solid fa-right-to-bracket"></i> Log In
+        </button>
+        <button id="auth-tab-signup" class="btn-luxury" style="flex: 1; border-radius: 0; background: transparent; color: var(--text-muted); padding: 0.5rem;" onclick="window.DentistoireApp.switchAuthTab('signup')">
+          <i class="fa-solid fa-user-plus"></i> Create Account
+        </button>
+      </div>
+
+      <!-- Form 1: Log In -->
+      <form id="auth-form-login" onsubmit="event.preventDefault(); window.DentistoireApp.performLogin();">
+        <div style="margin-bottom: 1.1rem;">
+          <label style="font-size: 0.85rem; font-weight: 600; display: block; margin-bottom: 0.3rem;">Email Address:</label>
+          <input type="email" id="auth-login-email" class="luxury-search-bar" style="width: 100%;" placeholder="student@dentistoire.edu or admin@dentistoire.edu" required>
+        </div>
+
+        <div style="margin-bottom: 1.5rem;">
+          <label style="font-size: 0.85rem; font-weight: 600; display: block; margin-bottom: 0.3rem;">Password:</label>
+          <input type="password" id="auth-login-password" class="luxury-search-bar" style="width: 100%;" placeholder="••••••••" required>
+        </div>
+
+        <button type="submit" class="btn-luxury glowing-continue-btn" style="width: 100%; justify-content: center; padding: 0.65rem; font-size: 0.95rem;">
+          <i class="fa-solid fa-right-to-bracket"></i> Sign In to Account
+        </button>
+
+        <p style="font-size: 0.78rem; color: var(--text-muted); text-align: center; margin-top: 1rem;">
+          Faculty Admin? Use <code style="background: var(--bg-secondary); padding: 0.1rem 0.3rem;">admin@dentistoire.edu</code> to unlock Admin Hub.
+        </p>
+      </form>
+
+      <!-- Form 2: Create Account / Sign Up -->
+      <form id="auth-form-signup" style="display: none;" onsubmit="event.preventDefault(); window.DentistoireApp.performSignup();">
+        <div style="margin-bottom: 1rem;">
+          <label style="font-size: 0.85rem; font-weight: 600; display: block; margin-bottom: 0.3rem;">Full Name:</label>
+          <input type="text" id="auth-signup-name" class="luxury-search-bar" style="width: 100%;" placeholder="e.g. Dr. Sarah Al-Sayed" required>
+        </div>
+
+        <div style="margin-bottom: 1rem;">
+          <label style="font-size: 0.85rem; font-weight: 600; display: block; margin-bottom: 0.3rem;">Email Address:</label>
+          <input type="email" id="auth-signup-email" class="luxury-search-bar" style="width: 100%;" placeholder="sarah@dentistoire.edu" required>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem; margin-bottom: 1.5rem;">
+          <div>
+            <label style="font-size: 0.85rem; font-weight: 600; display: block; margin-bottom: 0.3rem;">Password:</label>
+            <input type="password" id="auth-signup-password" class="luxury-search-bar" style="width: 100%;" placeholder="••••••••" required>
+          </div>
+          <div>
+            <label style="font-size: 0.85rem; font-weight: 600; display: block; margin-bottom: 0.3rem;">Academic Year:</label>
+            <select id="auth-signup-year" class="luxury-search-bar" style="width: 100%;">
+              <option value="1st Year">1st Year Student</option>
+              <option value="2nd Year" selected>2nd Year Student</option>
+              <option value="3rd Year">3rd Year Student</option>
+              <option value="4th Year">4th Year Student</option>
+              <option value="Clinical Intern">Clinical Intern</option>
+            </select>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-luxury glowing-continue-btn" style="width: 100%; justify-content: center; padding: 0.65rem; font-size: 0.95rem;">
+          <i class="fa-solid fa-user-plus"></i> Create Student Account & Log In
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Laboratory Quiz Placeholder Modal -->
+  <div class="quiz-modal-backdrop" id="lab-coming-soon-modal" style="display: none;">
+    <div class="quiz-runner-card" style="max-width: 500px; text-align: center;">
+      <i class="fa-solid fa-flask-vial" style="font-size: 3rem; color: var(--primary); margin-bottom: 1rem;"></i>
+      <h3 style="font-family: 'Playfair Display', serif; font-size: 1.8rem; margin-bottom: 0.5rem;" id="lab-modal-title">Laboratory Quiz</h3>
+      <span class="btn-luxury" style="padding: 0.2rem 0.7rem; font-size: 0.75rem; background: rgba(245, 158, 11, 0.2); color: #f59e0b; border: 1px solid #f59e0b; margin-bottom: 1rem;">
+        Coming Soon
+      </span>
+      <p style="color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 1.5rem; line-height: 1.5;">
+        Laboratory quiz questions are currently being prepared by faculty administrators and will be available in a future update.
+      </p>
+      <button class="btn-luxury" style="margin: 0 auto;" onclick="document.getElementById('lab-coming-soon-modal').style.display = 'none';">Close Placeholder</button>
+    </div>
+  </div>
+
+  <!-- Quiz Modal with Interactive Save & Exit Quiz Controls -->
+  <div class="quiz-modal-backdrop" id="quiz-runner-overlay" style="display: none;">
+    <div class="quiz-runner-card" id="quiz-swipe-card">
+      <div class="quiz-header-bar">
+        <span class="btn-luxury" style="padding: 0.25rem 0.8rem; font-size: 0.75rem;" id="quiz-subject-tag">Oral Histology</span>
+        <div style="display: flex; gap: 0.6rem; align-items: center;">
+          <button class="action-btn" id="btn-save-current-quiz" style="padding: 0.4rem 0.85rem; font-size: 0.8rem; border-radius: var(--radius-full); background: var(--card-bg); border: 1px solid var(--card-border); color: var(--text-primary); cursor: pointer;" onclick="window.DentistoireApp.saveCurrentQuizForRestudy()"><i class="fa-regular fa-star" id="btn-save-icon"></i> <span id="btn-save-text">Save Question</span></button>
+          <button class="btn-luxury" style="padding: 0.35rem 0.85rem; font-size: 0.8rem; background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid #ef4444;" onclick="window.DentistoireApp.confirmExitQuiz()"><i class="fa-solid fa-arrow-right-from-bracket"></i> Exit Quiz</button>
+        </div>
+      </div>
+
+      <h3 id="quiz-question-text" class="quiz-question-title">Question text goes here</h3>
+      
+      <!-- Vertical Stack Answer Cards Container -->
+      <div id="quiz-options-box" class="quiz-options-container"></div>
+
+      <div id="quiz-explanation-box" style="display: none; background: var(--primary-glow); padding: 1.25rem; border-radius: var(--radius-md); margin-top: 1.25rem; text-align: left; border: 1px solid var(--primary);">
+        <p style="margin-bottom: 0.5rem; font-weight: 700; color: var(--text-primary);"><i class="fa-solid fa-circle-info"></i> Explanation:</p>
+        <p id="quiz-explanation-content" style="font-size: 0.9rem; margin-bottom: 0.75rem; color: var(--text-secondary); line-height: 1.5;"></p>
+
+        <div id="wrong-answer-suggestion-box" style="display: none; background: rgba(239, 68, 68, 0.12); padding: 0.85rem; border-radius: var(--radius-sm); border-left: 4px solid #ef4444; margin-top: 0.5rem;">
+          <strong style="color: #ef4444; font-size: 0.85rem;"><i class="fa-solid fa-lightbulb"></i> Suggested Learning Material:</strong>
+          <p id="suggested-reading-text" style="font-size: 0.85rem; color: var(--text-primary); margin-top: 0.25rem; font-weight: 500;"></p>
+        </div>
+      </div>
+
+      <!-- Controls & Softly Glowing Continue Button -->
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.75rem; padding-top: 1.25rem; border-top: 1px solid var(--card-border);">
+        <button class="btn-luxury" style="padding: 0.4rem 1rem; font-size: 0.85rem;" onclick="window.DentistoireApp.prevQuestion()">&larr; Previous</button>
+        <span id="quiz-progress-counter" style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted);">Question 1 of 2</span>
+        <button class="btn-luxury glowing-continue-btn" id="btn-quiz-continue" style="padding: 0.4rem 1.2rem; font-size: 0.85rem;" onclick="window.DentistoireApp.nextQuestion()">Continue &rarr;</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="courses.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
