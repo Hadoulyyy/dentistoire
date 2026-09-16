@@ -37,7 +37,7 @@
   ];
 
   // Default Clean Student Data v27 (Immediate sync for 16 Development of the Face questions on public link)
-  const state = JSON.parse(localStorage.getItem('dentistoire_app_state_v27')) || {
+  const state = JSON.parse(localStorage.getItem('dentistoire_app_state_v28')) || {
     theme: "dream-blush",
     language: "en",
     user: null,
@@ -60,7 +60,7 @@
   };
 
   function saveState() {
-    localStorage.setItem('dentistoire_app_state_v27', JSON.stringify(state));
+    localStorage.setItem('dentistoire_app_state_v28', JSON.stringify(state));
   }
 
   function showToast(message) {
