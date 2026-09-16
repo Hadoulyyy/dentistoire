@@ -365,23 +365,63 @@
 
   // Router & Security Route Guard
   function navigateTo(viewId) {
+    if (!viewId) return;
 
+    // Handle viewId aliases & normalize names
+    const aliasMap = {
+      'home': 'view-home',
+      'dashboard': 'view-home',
+      'subjects': 'view-subjects',
+      'focus': 'view-focus-mode',
+      'focus-mode': 'view-focus-mode',
+      'lab': 'view-lab-quizzes',
+      'lab-quiz': 'view-lab-quizzes',
+      'lab-quizzes': 'view-lab-quizzes',
+      'quiz': 'view-subjects',
+      'quiz-library': 'view-subjects',
+      'saved': 'view-saved-weak',
+      'saved-weak': 'view-saved-weak',
+      'analytics': 'view-analytics',
+      'progress': 'view-analytics',
+      'admin': 'view-admin-hub',
+      'admin-hub': 'view-admin-hub',
+      'profile': 'view-profile',
+      'settings': 'view-settings'
+    };
 
-    document.querySelectorAll('.page-view').forEach(v => v.classList.remove('active'));
-    document.querySelectorAll('.nav-link-btn').forEach(b => b.classList.remove('active'));
+    const targetId = aliasMap[viewId] || (viewId.startsWith('view-') ? viewId : `view-${viewId}`);
 
-    const targetView = document.getElementById(viewId);
-    if (targetView) targetView.classList.add('active');
+    // 1. Hide all page views
+    const allViews = document.querySelectorAll('.page-view');
+    allViews.forEach(v => {
+      v.classList.remove('active');
+      v.style.display = 'none';
+    });
 
-    const targetBtn = document.querySelector(`.nav-link-btn[data-target="${viewId}"]`);
-    if (targetBtn) targetBtn.classList.add('active');
+    // 2. Remove active state from all nav buttons
+    const allBtns = document.querySelectorAll('.nav-link-btn');
+    allBtns.forEach(b => b.classList.remove('active'));
 
+    // 3. Show target page view
+    const targetView = document.getElementById(targetId);
+    if (targetView) {
+      targetView.classList.add('active');
+      targetView.style.display = 'block';
+    } else {
+      console.warn(`Navigation target section not found: ${targetId} (from ${viewId})`);
+    }
+
+    // 4. Highlight matching nav button(s)
+    const matchingBtns = document.querySelectorAll(`.nav-link-btn[data-target="${targetId}"], .nav-link-btn[data-target="${viewId}"]`);
+    matchingBtns.forEach(b => b.classList.add('active'));
+
+    // 5. Update breadcrumbs
     const crumb = document.getElementById('crumb-active-title');
     if (crumb) {
       const titleMap = {
         'view-home': 'Dashboard',
         'view-subjects': 'Subjects Library',
-        'view-sheet-list': activeSelectedSubject ? activeSelectedSubject.title[state.language] : 'Sheets List',
+        'view-sheet-list': activeSelectedSubject ? (activeSelectedSubject.title[state.language] || activeSelectedSubject.title.en) : 'Sheets List',
         'view-focus-mode': 'Focus Study Mode',
         'view-lab-quizzes': 'Laboratory Quiz',
         'view-saved-weak': 'Saved & Weak Questions',
@@ -390,27 +430,36 @@
         'view-profile': 'User Profile',
         'view-settings': 'Platform Settings'
       };
-      crumb.textContent = titleMap[viewId] || 'Dashboard';
+      crumb.textContent = titleMap[targetId] || 'Dashboard';
     }
 
-    if (viewId === 'view-analytics') {
+    // 6. View specific re-renders
+    if (targetId === 'view-analytics') {
       renderActivityChart();
       renderSubjectPieChart();
-    } else if (viewId === 'view-saved-weak') {
+    } else if (targetId === 'view-saved-weak') {
       renderSavedAndWeakView();
-    } else if (viewId === 'view-admin-hub') {
+    } else if (targetId === 'view-admin-hub') {
       renderAdminUsersTable();
       populateAdminDropdowns();
-    } else if (viewId === 'view-lab-quizzes') {
+    } else if (targetId === 'view-lab-quizzes') {
       renderLabPlaceholders();
-    } else if (viewId === 'view-profile') {
+    } else if (targetId === 'view-profile') {
       renderProfileBadges();
-    } else if (viewId === 'view-home' || viewId === 'view-subjects') {
+    } else if (targetId === 'view-home' || targetId === 'view-subjects') {
       renderSubjects('home-featured-subjects');
       renderSubjects('catalog-subjects-grid');
       renderTodoList();
     }
 
+    // 7. Dismiss any open modals or overlays so target section is immediately visible
+    const modalsToDismiss = ['quiz-runner-overlay', 'lab-coming-soon-modal', 'auth-modal', 'todo-modal'];
+    modalsToDismiss.forEach(mId => {
+      const modal = document.getElementById(mId);
+      if (modal) modal.style.display = 'none';
+    });
+
+    // 8. Smooth scroll to top of page container
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
@@ -1596,12 +1645,15 @@
     renderSubjects('catalog-subjects-grid');
     updateRoleBasedUI();
 
-    document.querySelectorAll('.nav-link-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.preventDefault();
+    document.addEventListener('click', (e) => {
+      const btn = e.target.closest('.nav-link-btn, [data-target]');
+      if (btn) {
         const target = btn.getAttribute('data-target');
-        if (target) navigateTo(target);
-      });
+        if (target) {
+          e.preventDefault();
+          navigateTo(target);
+        }
+      }
     });
 
     const pdfDrop = document.getElementById('pdf-drop-zone');
@@ -1658,6 +1710,11 @@
   } else {
     initApp();
   }
+
+  // Direct Window Function Exposure for Bulletproof Onclick Execution
+  window.navigateTo = navigateTo;
+  window.selectSubject = selectSubject;
+  window.startSheetQuestions = startSheetQuestions;
 
   // Global API
   window.DentistoireApp = {
