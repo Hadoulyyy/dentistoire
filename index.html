@@ -1938,7 +1938,393 @@ window.DENTAL_SUBJECTS = [
       ar: "مبادئ تحضير الأسنان، تيجان الخزف والترميمات الكاملة، طبعات الفم، نماذج الشمع والصب."
     },
     sheets: [
-      { id: "cr-s1", title: { en: "1. Introduction", ar: "1. مقدمة" }, topicsCount: 0 },
+      {
+        id: "cr-s1",
+        title: { en: "1. Introduction", ar: "1. مقدمة" },
+        topicsCount: 20,
+        quizzes: [
+          {
+            id: "q-crs1-1",
+            type: "mcq",
+            question: {
+              en: "Fixed prosthodontics is the branch of prosthodontics related to:",
+              ar: "الاستعاضة السنية الثابتة هي فرع من الاستعاضة السنية يتعلق بـ:"
+            },
+            options: [
+              { en: "Replacement of missing teeth by artificial substitutes that are removable by the patient", ar: "استبدال الأسنان المفقودة ببدائل اصطناعية يمكن للمريض إزالتها" },
+              { en: "Replacement of missing teeth by artificial substitutes that are not removable from the mouth by the patient", ar: "استبدال الأسنان المفقودة ببدائل اصطناعية لا يمكن للمريض إزالتها من الفم" },
+              { en: "Treatment of periodontal diseases", ar: "علاج أمراض الأنسجة الداعمة للأسنان" },
+              { en: "Orthodontic correction of teeth", ar: "التقويم التأهيلي للأسنان" }
+            ],
+            correct: 1,
+            explanation: {
+              en: "Fixed prosthodontics involves restorations (crowns and bridges) that are permanently cemented and cannot be removed by the patient.",
+              ar: "تعنى الاستعاضة السنية الثابتة بالترميمات (التيجان والجسور) الملتصقة دائماً والتي لا يمكن للمريض إزالتها."
+            }
+          },
+          {
+            id: "q-crs1-2",
+            type: "mcq",
+            question: {
+              en: "A crown is defined as:",
+              ar: "يُعرَّف التاج السني بأنه:"
+            },
+            options: [
+              { en: "A removable restoration of the coronal portion of the natural tooth", ar: "ترميم متحرك للجزء التاجي من السن الطبيعي" },
+              { en: "An artificial restoration of the coronal portion of the natural tooth (cemented extra-coronal restoration)", ar: "ترميم اصطناعي للجزء التاجي من السن الطبيعي (ترميم خارجي تاج ثابت ملتصق)" },
+              { en: "A surgical removal of the coronal portion of the tooth", ar: "إزالة جراحية للجزء التاجي من السن" },
+              { en: "A type of orthodontic appliance", ar: "نوع من أجهزة تقويم الأسنان" }
+            ],
+            correct: 1,
+            explanation: {
+              en: "A crown is an extra-coronal restoration that restores the functional and aesthetic form of the natural tooth crown.",
+              ar: "التاج هو ترميم خارجي يعيد الشكل الوظيفي والجمالي للتاج الطبيعي للسن."
+            }
+          },
+          {
+            id: "q-crs1-3",
+            type: "mcq",
+            question: {
+              en: "The portion of the tooth covered with enamel is called:",
+              ar: "يُسمى الجزء من السن المغطى بالمينا بـ:"
+            },
+            options: [
+              { en: "Clinical crown", ar: "التاج السريري" },
+              { en: "Anatomical crown", ar: "التاج التشريحي" },
+              { en: "Artificial crown", ar: "التاج الاصطناعي" },
+              { en: "Temporary crown", ar: "التاج المؤقت" }
+            ],
+            correct: 1,
+            explanation: {
+              en: "The anatomical crown is bounded by the cementoenamel junction (CEJ) and covered entirely by enamel.",
+              ar: "التاج التشريحي محدد بالملتقى المينائي الملاطي ومغطى بالكامل بطبقة المينا."
+            }
+          },
+          {
+            id: "q-crs1-4",
+            type: "mcq",
+            question: {
+              en: "The part of the tooth that appears in the mouth (above the gum) is called:",
+              ar: "الجزء من السن الذي يظهر في الفم (فوق اللثة) يُسمى:"
+            },
+            options: [
+              { en: "Clinical crown", ar: "التاج السريري" },
+              { en: "Anatomical crown", ar: "التاج التشريحي" },
+              { en: "Artificial crown", ar: "التاج الاصطناعي" },
+              { en: "Temporary crown", ar: "التاج المؤقت" }
+            ],
+            correct: 0,
+            explanation: {
+              en: "The clinical crown is the portion of the tooth visible in the oral cavity above the gingival margin.",
+              ar: "التاج السريري هو جزء السن المرئي في التجويف الفمي فوق حافة اللثة."
+            }
+          },
+          {
+            id: "q-crs1-5",
+            type: "mcq",
+            question: {
+              en: "A bridge is defined as:",
+              ar: "يُعرَّف الجسر السني بأنه:"
+            },
+            options: [
+              { en: "A removable prosthesis spanning a space in the dental arch", ar: "بديل متحرك يغطي الفراغ في القوس السني" },
+              { en: "A non-removable prosthesis of a metallic and/or non-metallic nature, spanning a space in the dental arch and firmly anchored at one or both ends to the adjacent teeth", ar: "بديل ثابت معدني أو غير معدني يغطي الفراغ في القوس السني ومثبت بقوة في أحد الطرفين أو كلاهما الأسنان المجاورة" },
+              { en: "A type of orthodontic appliance", ar: "نوع من أجهزة تقويم الأسنان" },
+              { en: "A surgical implant", ar: "زرعة جراحية" }
+            ],
+            correct: 1,
+            explanation: {
+              en: "A bridge (fixed partial denture) replaces missing teeth by anchoring to abutment teeth.",
+              ar: "الجسر (البديل الثابت الجزئي) يستبدل الأسنان المفقودة عبر التثبيت على الأسنان الدعامات."
+            }
+          },
+          {
+            id: "q-crs1-6",
+            type: "mcq",
+            question: {
+              en: "The artificial tooth which replaces the missing tooth is called:",
+              ar: "السن الاصطناعي الذي يحل محل السن المفقود يُسمى:"
+            },
+            options: [
+              { en: "Pontic", ar: "الدمية (Pontic)" },
+              { en: "Abutment", ar: "الدعامة (Abutment)" },
+              { en: "Retainer", ar: "المثبت (Retainer)" },
+              { en: "Connector", ar: "الواصل (Connector)" }
+            ],
+            correct: 0,
+            explanation: {
+              en: "The pontic is the suspended artificial tooth that replaces the missing natural tooth.",
+              ar: "الدمية (Pontic) هي السن الاصطناعي المعلق الذي يحل محل السن الطبيعي المفقود."
+            }
+          },
+          {
+            id: "q-crs1-7",
+            type: "mcq",
+            question: {
+              en: "The natural tooth or root that supports and retains the bridge at one or both ends is called:",
+              ar: "السن الطبيعي أو الجذر الذي يدعم ويثبت الجسر عند طرف واحد أو كلا الطرفين يُسمى:"
+            },
+            options: [
+              { en: "Pontic", ar: "الدمية (Pontic)" },
+              { en: "Abutment", ar: "الدعامة (Abutment)" },
+              { en: "Retainer", ar: "المثبت (Retainer)" },
+              { en: "Connector", ar: "الواصل (Connector)" }
+            ],
+            correct: 1,
+            explanation: {
+              en: "An abutment is a tooth, portion of a tooth, or implant that serves to support and retain a prosthesis.",
+              ar: "الدعامة (Abutment) هي السن أو جزء السن أو الزرعة التي تعمل على دعم وتثبيت البديل الاصطناعي."
+            }
+          },
+          {
+            id: "q-crs1-8",
+            type: "mcq",
+            question: {
+              en: "Which of the following is a consequence of tooth removal without replacement?",
+              ar: "أي مما يلي يُعد من نتائج خلع السن دون استبداله؟"
+            },
+            options: [
+              { en: "Super eruption or extrusion of the opposing tooth or teeth", ar: "البزوغ الزائد أو تطاول السن المقابل" },
+              { en: "Tilting of the adjacent teeth", ar: "ميلان الأسنان المجاورة" },
+              { en: "Loss of proximal contact and food impaction", ar: "فقدان نقطة التلامس بين الأسنان وانحشار الطعام" },
+              { en: "All of the above", ar: "كل ما سبق" }
+            ],
+            correct: 3,
+            explanation: {
+              en: "Unreplaced tooth loss leads to arch instability, including opposing extrusion, adjacent tipping, and proximal contact breakdown.",
+              ar: "فقدان السن دون استبداله يؤدي لعدم استقرار القوس السني بما في ذلك بزوغ السن المقابل وميل الأسنان المجاورة وانحشار الطعام."
+            }
+          },
+          {
+            id: "q-crs1-9",
+            type: "mcq",
+            question: {
+              en: "Which of the following is an option for single tooth replacement?",
+              ar: "أي مما يلي يُعتبر خياراً لاستبدال سن مفرد مفقود؟"
+            },
+            options: [
+              { en: "Implant", ar: "الزرعة السنية (Implant)" },
+              { en: "Resin bonded bridge", ar: "الجسر الراتنجي اللاصق (Maryland bridge)" },
+              { en: "Fixed partial denture", ar: "التركيبة الثابتة الجزئية (FPD)" },
+              { en: "All of the above", ar: "كل ما سبق" }
+            ],
+            correct: 3,
+            explanation: {
+              en: "Single teeth can be restored using dental implants, resin-bonded bridges (Maryland), or conventional fixed partial dentures.",
+              ar: "يمكن استبدال السن المفرد بواسطة الزرعات السنية، الجسور الراتنجية اللاصقة، أو التركيبات الثابتة التقليدية."
+            }
+          },
+          {
+            id: "q-crs1-10",
+            type: "mcq",
+            question: {
+              en: "The aims of fixed prosthodontic treatments include:",
+              ar: "تشمل أهداف علاجات الاستعاضة السنية الثابتة:"
+            },
+            options: [
+              { en: "Restore function and mastication", ar: "استعادة الوظيفة والمضغ" },
+              { en: "Restore aesthetics", ar: "استعادة المظهر الجمالي" },
+              { en: "Maintain health and integrity of dental arch", ar: "الحفاظ على صحة وسلامة القوس السني" },
+              { en: "All of the above", ar: "كل ما سبق" }
+            ],
+            correct: 3,
+            explanation: {
+              en: "Fixed prosthodontics aims to comprehensively restore mastication, phonetics, aesthetics, and maintain arch stability.",
+              ar: "تهدف الاستعاضة الثابتة إلى الشفاء الوظيفي والجمالي والحفاظ على القوس السني."
+            }
+          },
+          {
+            id: "q-crs1-11",
+            type: "mcq",
+            question: {
+              en: "An inlay is defined as:",
+              ar: "تُعرَّف الحشوة المصبوبة الداخلية (Inlay) بأنها:"
+            },
+            options: [
+              { en: "A restoration that covers a portion of occlusal and proximal surface but doesn't cover the cusps", ar: "ترميم يغطي جزءاً من السطح الإطباقي والملاصق ولكن لا يغطي الحدبات" },
+              { en: "A restoration that covers all cusps", ar: "ترميم يغطي جميع الحدبات" },
+              { en: "A removable prosthesis", ar: "تركيبة متحركة" },
+              { en: "A type of crown", ar: "نوع من التاج" }
+            ],
+            correct: 0,
+            explanation: {
+              en: "An inlay is an intra-coronal restoration prepared within tooth contours without capping any cusps.",
+              ar: "الحشوة المصبوبة الداخلية (Inlay) هي ترميم داخل التاج يحضر داخل حدود السن دون تغطية الحدبات."
+            }
+          },
+          {
+            id: "q-crs1-12",
+            type: "mcq",
+            question: {
+              en: "An onlay is used for:",
+              ar: "تُستخدم الحشوة المصبوبة الخارجية (Onlay) لـ:"
+            },
+            options: [
+              { en: "Restoring more extensively damaged posterior teeth needing wide mesio-occluso-distal restorations (MOD) with cusp overlays on the occlusal surface", ar: "ترميم الأسنان الخلفية المتضررة بشدة التي تحتاج حفرة واسعة وتغطية للحدبات الإطباقية" },
+              { en: "Restoring anterior teeth only", ar: "ترميم الأسنان الأمامية فقط" },
+              { en: "Replacing missing teeth", ar: "استبدال الأسنان المفقودة" },
+              { en: "Treating periodontal disease", ar: "علاج أمراض الأنسجة الداعمة" }
+            ],
+            correct: 0,
+            explanation: {
+              en: "An onlay is a partial coverage restoration that caps one or more cusps to protect weakened tooth structure.",
+              ar: "الحشوة الخارجية (Onlay) هي ترميم جزئي يغطي حدبة واحدة أو أكثر لحماية بناء السن الضعيف."
+            }
+          },
+          {
+            id: "q-crs1-13",
+            type: "mcq",
+            question: {
+              en: "Classification of crowns based on number of covered surfaces includes:",
+              ar: "يشمل تصنيف التيجان بناءً على عدد السطوح المغطاة:"
+            },
+            options: [
+              { en: "Full coverage (5 surfaces)", ar: "التغطية الكاملة (5 سطوح)" },
+              { en: "Partial coverage (less than 5 surfaces)", ar: "التغطية الجزئية (أقل من 5 سطوح)" },
+              { en: "Both A and B", ar: "كل من أ و ب" },
+              { en: "None of the above", ar: "لا شيء مما سبق" }
+            ],
+            correct: 2,
+            explanation: {
+              en: "Crowns are categorized structurally into full coverage crowns (covering all 5 surfaces) and partial coverage crowns (e.g., 3/4 or 7/8 crowns).",
+              ar: "تصنف التيجان إنشائياً إلى تيجان ذات تغطية كاملة (تغطي السطوح الخمسة) وتيجان جزئية (تغطي أقل من 5 سطوح)."
+            }
+          },
+          {
+            id: "q-crs1-14",
+            type: "mcq",
+            question: {
+              en: "A jacket crown is defined as:",
+              ar: "يُعرَّف التاج الخزفي الكامل (Jacket crown) بأنه:"
+            },
+            options: [
+              { en: "A crown that covers and restores the whole coronal portion of a tooth and is made up of porcelain or any other non-metallic material", ar: "تاج يغطي ويعيد بناء الجزء التاجي بالكامل ومصنوع من الخزف أو مادة غير معدنية أخرى" },
+              { en: "A crown made entirely of metal", ar: "تاج مصنوع بالكامل من المعدن" },
+              { en: "A crown with only partial coverage", ar: "تاج ذو تغطية جزئية فقط" },
+              { en: "A temporary crown", ar: "تاج مؤقت" }
+            ],
+            correct: 0,
+            explanation: {
+              en: "A jacket crown (all-ceramic/all-porcelain crown) covers the entire coronal surface using non-metallic aesthetic materials.",
+              ar: "التاج الخزفي (Jacket crown) يغطي كامل التاج بمادة غير معدنية وجمالية."
+            }
+          },
+          {
+            id: "q-crs1-15",
+            type: "mcq",
+            question: {
+              en: "A post crown is defined as:",
+              ar: "يُعرَّف التاج الوتدي (Post crown) بأنه:"
+            },
+            options: [
+              { en: "A jacket crown constructed on metal or non-metal core, retained by a post inserted into a prepared root canal", ar: "تاج مبني على قلب معدني أو غير معدني ومثبت بواسطة وتد يدخل في القناة الجذرية المحضرة" },
+              { en: "A crown with only partial coverage", ar: "تاج ذو تغطية جزئية فقط" },
+              { en: "A temporary crown", ar: "تاج مؤقت" },
+              { en: "A crown made entirely of composite", ar: "تاج مصنوع بالكامل من الكومبوزيت" }
+            ],
+            correct: 0,
+            explanation: {
+              en: "Post crowns utilize an intra-radicular post anchored in the root canal to provide retention for the coronal restoration in endodontically treated teeth.",
+              ar: "التاج الوتدي يستخدم وتداً جذرياً داخل القناة يوفر التثبيت للترميم التاجي في الأسنان المعالجة لبياً."
+            }
+          },
+          {
+            id: "q-crs1-16",
+            type: "mcq",
+            question: {
+              en: "A fixed-fixed bridge is defined as:",
+              ar: "يُعرَّف الجسر الثابت-الثابت (Fixed-fixed bridge) بأنه:"
+            },
+            options: [
+              { en: "A bridge in which the pontic is joined at both ends to the retainers by rigid connectors", ar: "جسر ترتبط فيه الدمية من الطرفين بالمثبتات بواسطة وصلات صلبة (Rigid connectors)" },
+              { en: "A bridge in which the pontic is joined at one end to the retainer by a rigid connector, and the other end by a non-rigid connector", ar: "جسر ترتبط فيه الدمية بوصلة صلبة في طرف وبصلة غير صلبة في الطرف الآخر" },
+              { en: "A bridge in which the pontic is joined to the retainer at one end only, and the other end is free or unsupported", ar: "جسر ترتبط فيه الدمية بالمثبت من طرف واحد فقط والطرف الآخر حر" },
+              { en: "A bridge in which the pontic takes its support from a remote abutment by a resilient curved arm", ar: "جسر تأخذ فيه الدمية دعمها من دعامة بعيدة عبر ذراع مرن انحنائي" }
+            ],
+            correct: 0,
+            explanation: {
+              en: "In a fixed-fixed partial denture design, rigid soldered or cast connectors join the pontic to retainers on both sides.",
+              ar: "في الجسر الثابت-الثابت، تربط وصلات صلبة مسبوكة أو ملحومة الدمية بالمثبتات من كلا الجانبين."
+            }
+          },
+          {
+            id: "q-crs1-17",
+            type: "mcq",
+            question: {
+              en: "A spring cantilever bridge is defined as:",
+              ar: "يُعرَّف الجسر ذو النابر (Spring cantilever bridge) بأنه:"
+            },
+            options: [
+              { en: "A bridge in which the pontic is joined at both ends to the retainers by rigid connectors", ar: "جسر ترتبط فيه الدمية من الطرفين بالمثبتات بواسطة وصلات صلبة" },
+              { en: "A bridge in which the pontic is joined at one end to the retainer by a rigid connector, and the other end by a non-rigid connector", ar: "جسر ترتبط فيه الدمية بوصلة صلبة في طرف ووصلة غير صلبة في الطرف الآخر" },
+              { en: "A bridge in which the pontic is joined to the retainer at one end only, and the other end is free or unsupported", ar: "جسر ترتبط فيه الدمية بالمثبت من طرف واحد فقط والطرف الآخر حر" },
+              { en: "A bridge in which the pontic takes its support from a remote abutment by a resilient curved arm (palatal spring)", ar: "جسر تأخذ فيه الدمية دعمها من دعامة بعيدة عبر ذراع مرن منحني (شريط حنكي)" }
+            ],
+            correct: 3,
+            explanation: {
+              en: "Spring cantilever bridges replace anterior teeth by connecting the pontic to a posterior abutment via a long, resilient palatal connector bar.",
+              ar: "الجسور ذات النابر تبدل الأسنان الأمامية عبر وصل الدمية بدعامة خلفية بواسطة شريط حنكي مرن."
+            }
+          },
+          {
+            id: "q-crs1-18",
+            type: "mcq",
+            question: {
+              en: "Indications for fixed partial denture include:",
+              ar: "تشمل دواعي الاستعمال للتركيبة الثابتة الجزئية (FPD):"
+            },
+            options: [
+              { en: "One or two adjacent teeth are missing in the same arch", ar: "فقدان سن أو سنين متجاورين في نفس القوس" },
+              { en: "The supportive tissues are healthy", ar: "الأنسجة الداعمة صحية وسليمة" },
+              { en: "Suitable abutment teeth are present", ar: "توفّر أسنان دعامات مناسبة" },
+              { en: "All of the above", ar: "كل ما سبق" }
+            ],
+            correct: 3,
+            explanation: {
+              en: "Fixed partial dentures are indicated when short edentulous spans exist alongside healthy periodontal tissue and sound abutment teeth.",
+              ar: "يُستطب الجسر الثابت عند فقدان مسافة قصيرة مع صحة الأنسجة الداعمة وتوافر أسنان دعامات جيدة."
+            }
+          },
+          {
+            id: "q-crs1-19",
+            type: "mcq",
+            question: {
+              en: "Loss of a mandibular first molar not replaced with an FPD typically results in:",
+              ar: "فقدان الضرس الأول السفلي دون استبداله بتركيبة ثابتة ينجم عنه عادةً:"
+            },
+            options: [
+              { en: "Supraclusion of opposing teeth", ar: "التطاول أو البزوغ الزائد للأسنان المقابلة (Supraclusion)" },
+              { en: "Infraclusion of opposing teeth", ar: "الانخفاض الإطباقي للأسنان المقابلة" },
+              { en: "No change in occlusion", ar: "عدم حدوث أي تغيير في الإطباق" },
+              { en: "Improved occlusion", ar: "تحسّن في الإطباق" }
+            ],
+            correct: 0,
+            explanation: {
+              en: "Loss of support causes the opposing maxillary first molar to extrude/supraclude into the vacant space.",
+              ar: "فقدان الدعم تؤدي إلى تطاول وبزوغ الضرس العلوي المقابل نحو المسافة الفارغة."
+            }
+          },
+          {
+            id: "q-crs1-20",
+            type: "mcq",
+            question: {
+              en: "Fixed prosthodontics is divided into:",
+              ar: "تنقسم الاستعاضة السنية الثابتة أساساً إلى:"
+            },
+            options: [
+              { en: "Single crown and bridge", ar: "التاج المفرد والجسر" },
+              { en: "Complete and partial dentures", ar: "الطقوم الكاملة والجزئية" },
+              { en: "Removable and implants", ar: "التركيبات المتحركة والزرعات" },
+              { en: "Intra coronal and extra coronal", ar: "الترميمات داخل التاج وخارج التاج" }
+            ],
+            correct: 0,
+            explanation: {
+              en: "The primary clinical divisions of fixed prosthodontic restorations are single crown restorations and multi-unit bridges.",
+              ar: "الأقسام السريرية الرئيسية للاستعاضة الثابتة هي التيجان المفردة والجسور متعددة الوحدات."
+            }
+          }
+        ]
+      }
       { id: "cr-s2", title: { en: "2. Instruments", ar: "2. الأدوات والأجهزة" }, topicsCount: 0 },
       { id: "cr-s3", title: { en: "3. Principles of tooth preparation", ar: "3. مبادئ تحضير الأسنان" }, topicsCount: 0 },
       { id: "cr-s4", title: { en: "4. Metal ceramic", ar: "4. الخزف المنصهر على معدن" }, topicsCount: 0 },
@@ -2233,7 +2619,7 @@ window.DENTISTOIRE_INITIAL_USER = {
   ];
 
   // Default Clean Student Data v27 (Immediate sync for 16 Development of the Face questions on public link)
-  const state = JSON.parse(localStorage.getItem('dentistoire_app_state_v27')) || {
+  const state = JSON.parse(localStorage.getItem('dentistoire_app_state_v28')) || {
     theme: "dream-blush",
     language: "en",
     user: null,
@@ -2256,7 +2642,7 @@ window.DENTISTOIRE_INITIAL_USER = {
   };
 
   function saveState() {
-    localStorage.setItem('dentistoire_app_state_v27', JSON.stringify(state));
+    localStorage.setItem('dentistoire_app_state_v28', JSON.stringify(state));
   }
 
   function showToast(message) {
