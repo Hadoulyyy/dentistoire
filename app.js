@@ -916,7 +916,12 @@
   let activeQuizIdx = 0;
 
   function startSheetQuestions(sheetId) {
+    const subjects = window.DENTAL_SUBJECTS || [];
+    if (!activeSelectedSubject || !activeSelectedSubject.sheets || !activeSelectedSubject.sheets.some(s => s.id === sheetId)) {
+      activeSelectedSubject = subjects.find(sbj => sbj.sheets && sbj.sheets.some(sh => sh.id === sheetId));
+    }
     if (!activeSelectedSubject || !activeSelectedSubject.sheets) return;
+
     const sheet = activeSelectedSubject.sheets.find(s => s.id === sheetId);
     if (!sheet || !sheet.quizzes || sheet.quizzes.length === 0) {
       showToast("No active questions available for this sheet yet!");
