@@ -346,6 +346,62 @@
               </button>
             </div>
 
+            <!-- Manual Single Question Creator Form -->
+            <div style="background: var(--card-bg); border: 1px solid var(--card-border); padding: 1.25rem; border-radius: var(--radius-md); margin-top: 1.5rem;">
+              <h4 style="margin-bottom: 0.85rem;"><i class="fa-solid fa-pen-to-square" style="color: var(--primary);"></i> Manual Question Form (إضافة سؤال يدوي مباشر)</h4>
+              
+              <div style="margin-bottom: 0.85rem;">
+                <label style="font-size: 0.85rem; font-weight: 600; display: block; margin-bottom: 0.3rem;">Question Text (English):</label>
+                <input type="text" id="manual-q-en" class="luxury-search-bar" style="width: 100%; font-size: 0.88rem;" placeholder="e.g. Which component of porcelain crown provides aesthetics?">
+              </div>
+
+              <div style="margin-bottom: 0.85rem;">
+                <label style="font-size: 0.85rem; font-weight: 600; display: block; margin-bottom: 0.3rem;">Question Text (Arabic - اختياري):</label>
+                <input type="text" id="manual-q-ar" class="luxury-search-bar" style="width: 100%; font-size: 0.88rem;" dir="rtl" placeholder="مثال: أي مكون في تاج الخزف يوفر الجمالية؟">
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem; margin-bottom: 0.85rem;">
+                <div>
+                  <label style="font-size: 0.82rem; font-weight: 600; display: block; margin-bottom: 0.2rem;">Option A (الخيار الأول A):</label>
+                  <input type="text" id="manual-opt-a" class="luxury-search-bar" style="width: 100%; font-size: 0.85rem;" placeholder="Option A text">
+                </div>
+                <div>
+                  <label style="font-size: 0.82rem; font-weight: 600; display: block; margin-bottom: 0.2rem;">Option B (الخيار الثاني B):</label>
+                  <input type="text" id="manual-opt-b" class="luxury-search-bar" style="width: 100%; font-size: 0.85rem;" placeholder="Option B text">
+                </div>
+                <div>
+                  <label style="font-size: 0.82rem; font-weight: 600; display: block; margin-bottom: 0.2rem;">Option C (الخيار الثالث C):</label>
+                  <input type="text" id="manual-opt-c" class="luxury-search-bar" style="width: 100%; font-size: 0.85rem;" placeholder="Option C text">
+                </div>
+                <div>
+                  <label style="font-size: 0.82rem; font-weight: 600; display: block; margin-bottom: 0.2rem;">Option D (الخيار الرابع D):</label>
+                  <input type="text" id="manual-opt-d" class="luxury-search-bar" style="width: 100%; font-size: 0.85rem;" placeholder="Option D text">
+                </div>
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem; margin-bottom: 1.25rem;">
+                <div>
+                  <label style="font-size: 0.85rem; font-weight: 600; display: block; margin-bottom: 0.3rem;">Correct Option (الخيار الصحيح):</label>
+                  <select id="manual-q-correct" class="luxury-search-bar" style="width: 100%; font-size: 0.85rem;">
+                    <option value="0">Option A (الخيار A)</option>
+                    <option value="1">Option B (الخيار B)</option>
+                    <option value="2">Option C (الخيار C)</option>
+                    <option value="3">Option D (الخيار D)</option>
+                  </select>
+                </div>
+                <div>
+                  <label style="font-size: 0.85rem; font-weight: 600; display: block; margin-bottom: 0.3rem;">Explanation (الشرح / التوضيح):</label>
+                  <input type="text" id="manual-q-exp" class="luxury-search-bar" style="width: 100%; font-size: 0.85rem;" placeholder="Detailed explanation for students...">
+                </div>
+              </div>
+
+              <div style="display: flex; gap: 0.75rem;">
+                <button class="btn-luxury" style="padding: 0.45rem 1.2rem; font-size: 0.85rem;" onclick="window.DentistoireApp.addManualSingleQuestion()">
+                  <i class="fa-solid fa-plus"></i> Add Question to Sheet (إضافة السؤال للشيت)
+                </button>
+              </div>
+            </div>
+
             <!-- PDF Import Loading State -->
             <div id="pdf-import-loading-state" style="display: none; margin-top: 1.5rem; background: var(--bg-secondary); padding: 1.5rem; border-radius: var(--radius-md); border: 1px solid var(--card-border); text-align: center;">
               <i class="fa-solid fa-circle-notch fa-spin" style="font-size: 2.5rem; color: var(--primary); margin-bottom: 0.75rem;"></i>
