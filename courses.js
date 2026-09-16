@@ -804,7 +804,7 @@ window.DENTAL_SUBJECTS = [
             }
           }
         ]
-      }
+      },
       { id: "cr-s2", title: { en: "2. Instruments", ar: "2. الأدوات والأجهزة" }, topicsCount: 0 },
       { id: "cr-s3", title: { en: "3. Principles of tooth preparation", ar: "3. مبادئ تحضير الأسنان" }, topicsCount: 0 },
       { id: "cr-s4", title: { en: "4. Metal ceramic", ar: "4. الخزف المنصهر على معدن" }, topicsCount: 0 },
@@ -1058,3 +1058,4 @@ window.DENTISTOIRE_INITIAL_USER = {
   studyTimeMinutes: 0,
   accuracy: "0%"
 };
+
