@@ -1591,6 +1591,91 @@
     }
   }
 
+  function addManualSingleQuestion() {
+    const sbjSelect = document.getElementById('pdf-target-subject');
+    const sheetSelect = document.getElementById('pdf-target-sheet');
+
+    const qEnEl = document.getElementById('manual-q-en');
+    const qArEl = document.getElementById('manual-q-ar');
+    const optAEl = document.getElementById('manual-opt-a');
+    const optBEl = document.getElementById('manual-opt-b');
+    const optCEl = document.getElementById('manual-opt-c');
+    const optDEl = document.getElementById('manual-opt-d');
+    const corrEl = document.getElementById('manual-q-correct');
+    const expEl = document.getElementById('manual-q-exp');
+
+    const qEn = qEnEl ? qEnEl.value.trim() : "";
+    const qAr = qArEl && qArEl.value.trim() ? qArEl.value.trim() : qEn;
+
+    const optA = optAEl ? optAEl.value.trim() : "";
+    const optB = optBEl ? optBEl.value.trim() : "";
+    const optC = optCEl ? optCEl.value.trim() : "";
+    const optD = optDEl ? optDEl.value.trim() : "";
+
+    const correctIdx = corrEl ? parseInt(corrEl.value) || 0 : 0;
+    const expText = expEl && expEl.value.trim() ? expEl.value.trim() : "Official curriculum question.";
+
+    if (!qEn) {
+      showToast("Please enter the Question Text (English).");
+      return;
+    }
+
+    if (!optA || !optB) {
+      showToast("Please enter at least Option A and Option B.");
+      return;
+    }
+
+    const options = [
+      { en: optA, ar: optA },
+      { en: optB, ar: optB }
+    ];
+    if (optC) options.push({ en: optC, ar: optC });
+    if (optD) options.push({ en: optD, ar: optD });
+
+    const subjects = window.DENTAL_SUBJECTS || [];
+    let targetSubject = subjects.find(s => s && sbjSelect && s.id === sbjSelect.value) || subjects[0];
+    let targetSheet = targetSubject && targetSubject.sheets ? targetSubject.sheets.find(sh => sheetSelect && sh.id === sheetSelect.value) : null;
+    if (!targetSheet && targetSubject && targetSubject.sheets) targetSheet = targetSubject.sheets[0];
+
+    if (!targetSheet) {
+      showToast("No target sheet found.");
+      return;
+    }
+
+    if (!targetSheet.quizzes) targetSheet.quizzes = [];
+
+    const newQuestion = {
+      id: `q_manual_${Date.now()}`,
+      type: "mcq",
+      question: { en: qEn, ar: qAr },
+      options: options,
+      correct: correctIdx,
+      explanation: { en: expText, ar: expText }
+    };
+
+    targetSheet.quizzes.push(newQuestion);
+    targetSheet.topicsCount = targetSheet.quizzes.length;
+
+    if (!state.customQuizzes) state.customQuizzes = [];
+    state.customQuizzes.push({
+      subjectId: targetSubject.id,
+      sheetId: targetSheet.id,
+      questions: [newQuestion]
+    });
+
+    saveState();
+
+    if (qEnEl) qEnEl.value = "";
+    if (qArEl) qArEl.value = "";
+    if (optAEl) optAEl.value = "";
+    if (optBEl) optBEl.value = "";
+    if (optCEl) optCEl.value = "";
+    if (optDEl) optDEl.value = "";
+    if (expEl) expEl.value = "";
+
+    showToast(`✅ Question added successfully to ${targetSheet.title[state.language] || 'sheet'}! Total: ${targetSheet.quizzes.length}`);
+  }
+
   function launchImportedQuizNow() {
     if (!lastImportTarget) {
       showToast("No recent import target found.");
@@ -1727,12 +1812,14 @@
   window.navigateTo = navigateTo;
   window.selectSubject = selectSubject;
   window.startSheetQuestions = startSheetQuestions;
+  window.addManualSingleQuestion = addManualSingleQuestion;
 
   // Global API
   window.DentistoireApp = {
     navigateTo,
     selectSubject,
     startSheetQuestions,
+    addManualSingleQuestion,
     nextQuestion,
     prevQuestion,
     answerQuestion,
