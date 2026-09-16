@@ -1180,13 +1180,23 @@
     if (fill) fill.style.width = `${pct}%`;
 
     const streakVal = state.streak || 0;
-    document.getElementById('widget-val-streak').textContent = `${streakVal} Days`;
+    const streakEl = document.getElementById('widget-val-streak');
+    if (streakEl) streakEl.textContent = `${streakVal} Days`;
 
-    document.getElementById('widget-val-xp').textContent = `${xp} XP`;
-    document.getElementById('widget-val-level').textContent = `Rank: ${rank}`;
-    document.getElementById('profile-val-xp').textContent = `${xp} XP`;
-    document.getElementById('profile-val-level').textContent = rank;
-    document.getElementById('profile-val-streak').textContent = `${streakVal} Days`;
+    const widgetXP = document.getElementById('widget-val-xp');
+    if (widgetXP) widgetXP.textContent = `${xp} XP`;
+
+    const widgetLevel = document.getElementById('widget-val-level');
+    if (widgetLevel) widgetLevel.textContent = `Rank: ${rank}`;
+
+    const profileXP = document.getElementById('profile-val-xp');
+    if (profileXP) profileXP.textContent = `${xp} XP`;
+
+    const profileLevel = document.getElementById('profile-val-level');
+    if (profileLevel) profileLevel.textContent = rank;
+
+    const profileStreak = document.getElementById('profile-val-streak');
+    if (profileStreak) profileStreak.textContent = `${streakVal} Days`;
   }
 
   function renderDailyMissions() {
