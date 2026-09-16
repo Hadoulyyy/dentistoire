@@ -924,31 +924,35 @@ html[dir="rtl"] .quiz-question-title {
         </div>
 
         <div class="nav-links">
-          <button class="nav-link-btn active" data-target="view-home" onclick="window.DentistoireApp.navigateTo('view-home')">
+          <button class="nav-link-btn active" data-target="view-home" onclick="window.navigateTo('view-home')">
             <i class="fa-solid fa-house"></i>
             <span data-i18n="nav_home">Home</span>
           </button>
-          <button class="nav-link-btn" data-target="view-subjects" onclick="window.DentistoireApp.navigateTo('view-subjects')">
+          <button class="nav-link-btn" data-target="view-subjects" onclick="window.navigateTo('view-subjects')">
             <i class="fa-solid fa-book-open"></i>
             <span data-i18n="nav_subjects">Subjects</span>
           </button>
-          <button class="nav-link-btn" data-target="view-focus-mode" onclick="window.DentistoireApp.navigateTo('view-focus-mode')">
+          <button class="nav-link-btn" data-target="view-focus-mode" onclick="window.navigateTo('view-focus-mode')">
             <i class="fa-solid fa-clock"></i>
             <span data-i18n="nav_focus">Focus Mode</span>
           </button>
-          <button class="nav-link-btn" data-target="view-lab-quizzes" onclick="window.DentistoireApp.navigateTo('view-lab-quizzes')">
+          <button class="nav-link-btn" data-target="view-lab-quizzes" onclick="window.navigateTo('view-lab-quizzes')">
             <i class="fa-solid fa-flask-vial"></i>
             <span data-i18n="nav_lab">Lab Quiz</span>
           </button>
-          <button class="nav-link-btn" data-target="view-saved-weak" onclick="window.DentistoireApp.navigateTo('view-saved-weak')">
+          <button class="nav-link-btn" data-target="view-subjects" onclick="window.navigateTo('view-subjects')">
+            <i class="fa-solid fa-graduation-cap"></i>
+            <span data-i18n="nav_quiz">Quiz</span>
+          </button>
+          <button class="nav-link-btn" data-target="view-saved-weak" onclick="window.navigateTo('view-saved-weak')">
             <i class="fa-solid fa-star"></i>
             <span data-i18n="nav_saved">Saved & Weak</span>
           </button>
-          <button class="nav-link-btn" data-target="view-analytics" onclick="window.DentistoireApp.navigateTo('view-analytics')">
+          <button class="nav-link-btn" data-target="view-analytics" onclick="window.navigateTo('view-analytics')">
             <i class="fa-solid fa-chart-line"></i>
             <span data-i18n="nav_analytics">Analytics</span>
           </button>
-          <button class="nav-link-btn" data-target="view-admin-hub" onclick="window.DentistoireApp.navigateTo('view-admin-hub')">
+          <button class="nav-link-btn" data-target="view-admin-hub" onclick="window.navigateTo('view-admin-hub')">
             <i class="fa-solid fa-shield-halved"></i>
             <span data-i18n="nav_admin">Admin Hub</span>
           </button>
@@ -2592,6 +2596,7 @@ window.DENTISTOIRE_INITIAL_USER = {
       nav_subjects: "Subjects",
       nav_focus: "Focus Mode",
       nav_lab: "Lab Quiz",
+      nav_quiz: "Quiz",
       nav_saved: "Saved & Weak",
       nav_analytics: "Analytics",
       nav_admin: "Admin Hub",
@@ -2603,6 +2608,7 @@ window.DENTISTOIRE_INITIAL_USER = {
       nav_subjects: "المواد الدراسية",
       nav_focus: "وضع التركيز",
       nav_lab: "مختبر الكويز",
+      nav_quiz: "الاختبارات",
       nav_saved: "المحفوظات والضعف",
       nav_analytics: "الإحصائيات",
       nav_admin: "مركز الإدارة",
