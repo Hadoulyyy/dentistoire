@@ -2698,7 +2698,7 @@ window.DENTISTOIRE_INITIAL_USER = {
 
     const adminNavBtn = document.querySelector('.nav-link-btn[data-target="view-admin-hub"]');
     if (adminNavBtn) {
-      adminNavBtn.style.display = isAdmin ? 'inline-flex' : 'none';
+      adminNavBtn.style.display = 'inline-flex';
     }
 
     const authBtn = document.getElementById('btn-auth-trigger');
@@ -2947,13 +2947,7 @@ window.DENTISTOIRE_INITIAL_USER = {
 
   // Router & Security Route Guard
   function navigateTo(viewId) {
-    if (viewId === 'view-admin-hub') {
-      const isAdmin = state.user && state.user.role === 'ADMIN';
-      if (!isAdmin) {
-        showToast("⛔ Access Denied: Administrative privileges required.");
-        return;
-      }
-    }
+
 
     document.querySelectorAll('.page-view').forEach(v => v.classList.remove('active'));
     document.querySelectorAll('.nav-link-btn').forEach(b => b.classList.remove('active'));
