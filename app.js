@@ -1087,10 +1087,12 @@
   }
 
   function confirmExitQuiz() {
-    const confirmExit = confirm("Are you sure you want to exit the quiz? Unsaved progress in this session will be lost.");
-    if (confirmExit) {
+    const modal = document.getElementById('exit-quiz-confirm-modal');
+    if (modal) {
+      modal.style.display = 'flex';
+    } else {
+      // Fallback if modal not found
       closeQuizRunner();
-      showToast("Exited quiz session.");
     }
   }
 
@@ -1860,3 +1862,4 @@
   };
 
 })();
+
